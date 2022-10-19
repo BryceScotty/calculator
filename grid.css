@@ -1,0 +1,102 @@
+body{
+    display:flex;
+    justify-content:center;
+    background: linear-gradient(to bottom right,rgba(0, 0, 0, 0.726),rgba(0, 0, 0, 0.822));
+    height:100vh;
+}
+.entireCalculator{
+    width:390px;
+    height:778px;
+    background-color: transparent;
+    margin-top:4em;
+}
+.screen{
+    display:flex;
+    flex-direction: column-reverse;
+    justify-content: flex-start;
+    align-items: flex-end;
+    padding:1em;
+    gap:1em;
+    height:40%;
+    color:white;
+    background-color: grey;
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+    background: linear-gradient(rgb(100,100,100),rgb(80,80, 80,1));
+    box-shadow: 10px 20px 20px rgb(0, 0, 0);
+}
+.currentProblem{
+    font-size:3.5em;
+}
+.buttons{
+    display:grid;
+    height:60%;
+    background: linear-gradient(rgb(60, 60, 60,1),rgb(50, 50, 50,1),rgb(25,25,25) );
+    padding:1.5em;
+    border-bottom-left-radius: 30px;
+    border-bottom-right-radius: 30px;
+    grid-template-columns: repeat(4,1fr);
+    grid-template-rows: repeat(6,1fr);
+    justify-items: center;
+    align-items:center;
+    grid-gap:.5em;
+    box-shadow:10px 20px 20px rgb(0, 0, 0);
+}
+button{
+    height:100%;
+    width:100%;
+    border-radius: 50%;
+    color:white;
+    font-size:2em;
+    color:rgba(255, 255, 255, 0.699);
+    border:black;
+    /* box-shadow:-2px -2px 8px 1px rgb(185, 185, 185), 5px 5px 8px 1px black; */
+}
+.operator{
+    /* background: linear-gradient(rgb(128, 0, 128)70%,rgb(145, 62, 145)); */
+    background: linear-gradient(to bottom right, rgba(162, 0, 255, 0.336)30%,rgb(55, 0, 87));
+    box-shadow:-3px -3px 5px -4px rgb(161, 161, 161), 3px 3px 5px -2px rgb(0, 0, 0)
+}
+.orange{
+    background: linear-gradient(to bottom right, rgba(255, 136, 0, 0.466)30%, rgb(78, 47, 0));
+    box-shadow:-3px -3px 5px -4px rgb(161, 161, 161), 3px 3px 5px -2px rgb(0, 0, 0)
+}
+.digit{
+    background: linear-gradient(to bottom right, rgb(48, 48, 48)30%, rgb(83, 83, 83));
+    box-shadow:-3px -3px 5px -2px rgb(71, 71, 71), 3px 3px 5px -2px rgb(0, 0, 0)
+}
+.equal{
+    grid-row:span 2;
+    border-top-left-radius:100px;
+    border-top-right-radius:100px;
+    border-bottom-left-radius:100px;
+    border-bottom-right-radius:100px;
+    background:rgb(162, 0, 255);
+    font-weight:900;
+    font-size:3em;
+    color:white;
+}
+.clearAll{
+    color:white;
+    background: rgb(255, 174, 0);
+}
+button:active{
+    color:white;
+    box-shadow:none;
+}
+.orange:active{
+    background: rgb(255, 174, 0);
+}
+.operator:active{
+    background:rgb(162, 0, 255);
+}
+.digit:active{
+    background:rgb(155, 155, 155);
+}
+.equal:active,
+.clearAll:active{
+    background:rgb(85, 255, 0);
+}
+button:hover{
+    transform:scale(1.03);
+}
