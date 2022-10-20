@@ -7,6 +7,8 @@ const equal=document.querySelector('.equal')
 const previousProblem=document.querySelector('.previousProblem')
 const chooseInteger=document.querySelector('.chooseInteger')
 const percentage=document.querySelector('.percentage')
+const decimal=document.querySelector('.decimal')
+const deleteButton=document.querySelector('.delete')
 
 let currentText=[]
 
@@ -16,14 +18,24 @@ let displayText=''
 
 let answer=''
 
+
 for(const digit of digits){
     digit.onmouseup=function(){
+        if(tempText.includes('.') && digit.innerHTML=='.' || digit.innerHTML=='Del') return
         if(!(tempText.includes('%'))){
-        tempText+=digit.innerHTML
-        displayText+=digit.innerHTML
-        currentProblem.innerHTML=displayText
+            tempText+=digit.innerHTML
+            displayText+=digit.innerHTML
+            currentProblem.innerHTML=displayText
     }
 }}
+
+deleteButton.onmouseup=function(){
+    displayText=displayText.slice(0,-1)
+    currentProblem.innerHTML=displayText
+    currentText=displayText.split(' ')
+    console.log(displayText)
+    console.log(currentText)
+}
 
 for(const operator of basicOperators){
     operator.onmouseup=function(){
@@ -32,7 +44,6 @@ for(const operator of basicOperators){
         currentProblem.innerHTML=displayText
         currentText.push(tempText)
         currentText.push(operator.innerHTML)
-        console.log(currentText)
         tempText=''
     }
 }}
@@ -73,6 +84,8 @@ equal.onmouseup=function(){
     solveAdditionAndSubtraction()
     previousProblem.innerHTML=displayText
     currentProblem.innerHTML='= '+answer
+    console.log(displayText)
+    console.log(currentText)
     clear()
 }}
 
