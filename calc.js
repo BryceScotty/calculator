@@ -20,57 +20,40 @@ for(const digit of digits){
         tempText+=digit.innerHTML
         currentProblem.innerHTML=displayText
     }
-
 }
 
 for(const operator of basicOperators){
     operator.onmouseup=function(){
-        displayText+=operator.innerHTML
+        if(/[0-9]/g.test(tempText)){
+        displayText+=' '+operator.innerHTML+' '
         currentProblem.innerHTML=displayText
         currentText.push(tempText)
         currentText.push(operator.innerHTML)
         console.log(currentText)
         tempText=''
     }
-}
+}}
+
 let emptyIndexesFiltered=''
 
 
 equal.onmouseup=function(){
+    if(/[0-9]/g.test(tempText) && currentText.length>1 ){
     currentText.push(tempText)
     solveMultiplicationAndDivision()
     emptyIndexesFiltered=currentText.filter(value => (!(value=='')))
-    console.log(emptyIndexesFiltered)
     solveAdditionAndSubtraction()
     previousProblem.innerHTML=displayText
     currentProblem.innerHTML='='+answer
-    tempText=''
-    answer=''
-    currentText=[]
-    displayText=''
-}
+    clear()
+}}
 
 clearButton.onmouseup=function(){
     clear()
+    currentProblem.innerHTML=''
 }
 
 
-
-
-// solveTheOperator = function(){
-//     for(i=0;i<currentText.length-2;i+=2){
-//         if(currentText[i+1]=='+'){
-//             console.log(currentText)
-//             answer=Number(currentText[i])+Number(currentText[i+2])
-//             currentText[i+2]=answer
-//         }
-//         if(currentText[i+1]=='-'){
-//             console.log(currentText)
-//             answer=Number(currentText[i])-Number(currentText[i+2])
-//             currentText[i+2]=answer
-//         }
-//     }
-// }
 solveAdditionAndSubtraction= function(){
     for(i=0;i<emptyIndexesFiltered.length-2;i+=2){
         if(emptyIndexesFiltered[i+1]=='+'){
@@ -108,5 +91,4 @@ clear =function(){
     answer=''
     currentText=[]
     displayText=''
-    currentProblem.innerHTML=''
 }
