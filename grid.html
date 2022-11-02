@@ -8,7 +8,7 @@
         <script src='calc.js' defer></script>
         <title>Calculator</title>
     </head>
-    <body>
+    <body class="body">
         <div class="entireCalculator">
             <div class="screen">
                 <div class="currentProblem"></div>
@@ -17,15 +17,19 @@
                 <div class="thirdPreviousProblem completed">4576</div>
                 <div class="fadingProblem completed">43355</div>
             </div>
-            <div class="buttons">
-                    <button class="clearAll orange">C</button>
+            <div class="bottomHalf">
+                <div class="theme">
+                    <div class="slider"></div>
+                </div>
+                <div class='buttons'>
+                    <button class="clearAll">C</button>
                     <button class="percentage orange">%</button>
                     <button class="chooseInteger orange">+/-</button>
                     <button class="multiplication operator">x</button>
 
-                    <button class="root orange">root</button>
-                    <button class="choosePower orange">^</button>
-                    <button class="squared orange">^2</button>
+                    <button class="leftParentheses orange">(</button>
+                    <button class="rightParentheses orange">)</button>
+                    <button class="powerOf orange">^</button>
                     <button class="division operator">/</button>
 
                     <button class="one digit">1</button>
@@ -47,6 +51,7 @@
                     <button class="decimal digit">.</button>
                     <button class="zero digit">0</button>
                     <button class="delete digit">Del</button>
+                </div>
             </div>
         </div>
     </body>

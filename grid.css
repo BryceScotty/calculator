@@ -1,4 +1,4 @@
-body{
+.body{
     display:flex;
     justify-content:center;
     background: linear-gradient(to bottom right,rgba(0, 0, 0, 0.726),rgba(0, 0, 0, 0.822));
@@ -28,32 +28,65 @@ body{
 .currentProblem{
     font-size:3.5em;
 }
-.buttons{
-    display:grid;
+.bottomHalf{
+    display:flex;
+    flex-direction: column;
+    gap:1.5em;
     height:60%;
     background: linear-gradient(rgb(60, 60, 60,1),rgb(50, 50, 50,1),rgb(25,25,25) );
     padding:1.5em;
     border-bottom-left-radius: 30px;
     border-bottom-right-radius: 30px;
+    box-shadow:10px 20px 20px rgb(0, 0, 0);
+}
+.theme {
+    display: flex;
+    background-color: #ccc;
+    cursor: pointer;
+    border-radius:100px;
+    width: 15%;
+    height:5%;
+    padding:3px;
+    justify-content: flex-start;
+    border:0px;
+    box-shadow:-2px -2px 4px -2px rgb(255, 255, 255), 4px 4px 5px -2px rgb(0, 0, 0);
+}
+
+  .slider {
+    display:flex;
+    height:100%;
+    width:50%;
+    border-radius:100px;
+    background-color: white;
+    transition:.2s;
+    margin:0;
+    border:0;
+    background-color:rgba(0, 255, 0, 0.74);
+    background-color: black;
+}
+
+.buttons{
+    height:90%;
+    display:grid;
     grid-template-columns: repeat(4,1fr);
     grid-template-rows: repeat(6,1fr);
     justify-items: center;
     align-items:center;
     grid-gap:.5em;
-    box-shadow:10px 20px 20px rgb(0, 0, 0);
 }
 button{
     height:100%;
     width:100%;
-    border-radius: 50%;
+    border-radius:100px;
     color:white;
-    font-size:2em;
+    font-size:1.5em;
+    font-weight:600;
     color:rgba(255, 255, 255, 0.699);
     border:black;
     /* box-shadow:-2px -2px 8px 1px rgb(185, 185, 185), 5px 5px 8px 1px black; */
 }
 .operator{
-    /* background: linear-gradient(rgb(128, 0, 128)70%,rgb(145, 62, 145)); */
+
     background: linear-gradient(to bottom right, rgba(162, 0, 255, 0.336)30%,rgb(55, 0, 87));
     box-shadow:-3px -3px 5px -4px rgb(161, 161, 161), 3px 3px 5px -2px rgb(0, 0, 0)
 }
@@ -80,6 +113,7 @@ button{
 .clearAll{
     color:white;
     background: rgb(255, 174, 0);
+    box-shadow:-3px -3px 5px -4px rgb(161, 161, 161), 3px 3px 5px -2px rgb(0, 0, 0)
 }
 button:active{
     color:white;
@@ -100,4 +134,46 @@ button:active{
 }
 button:hover{
     transform:scale(1.03);
+}
+.orangeWhiteMode{
+    background: rgba(255, 191, 73, 0.418);
+    border:1px outset  rgba(255, 191, 73, 0.418);
+    box-shadow:-3px -3px 5px -4px rgb(255, 255, 255), 3px 3px 15px -8px rgb(0, 0, 0);
+    color:rgb(255, 166, 0);
+}
+.operatorWhiteMode{
+    background: rgba(98, 33, 184, 0.226);
+    box-shadow:-3px -3px 5px -4px rgb(255, 255, 255), 3px 3px 15px -8px rgb(0, 0, 0);
+    color:rgb(117, 0, 117);
+    border:1px outset  rgb(209, 164, 209);
+}
+.digitWhiteMode{
+    background: rgb(245, 245, 245);
+    border:1px outset  rgb(221, 221, 221);
+    box-shadow:-3px -3px 5px -2px rgb(255, 255, 255), 3px 3px 15px -8px rgb(0, 0, 0);
+    color:rgba(0, 0, 0, 0.493);
+}
+.bodyWhiteMode{
+    background: linear-gradient(to bottom right,rgb(250, 250, 250)30%,rgb(212, 212, 212));
+}
+.bottomHalfWhiteMode{
+    background: linear-gradient(rgb(255, 255, 255)30%,rgb(238, 238, 238));
+    box-shadow: 10px 20px 20px rgb(180, 180, 180);
+}
+.screenWhiteMode{
+    background:white;
+    box-shadow: 10px 20px 20px rgb(180, 180, 180);
+    border-bottom: 2px solid rgb(196, 196, 196);
+}
+.screenWhiteMode div{
+    color:grey
+}
+.sliderWhiteMode{
+    background-color: white;
+}
+.sliderBoxWhiteMode{
+    box-shadow:-2px -2px 5px -2px rgb(255, 255, 255), 3px 3px 15px -8px rgb(0, 0, 0);
+}
+.equalANDclearAllWHiteMode{
+    box-shadow:-3px -3px 5px -4px rgb(255, 255, 255), 3px 3px 15px -8px rgb(0, 0, 0);
 }
