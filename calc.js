@@ -24,16 +24,14 @@ let displayText=''
 
 let answer=''
 
+let backSearch=''
+
 let parentCounter=0
 
 for(const digit of digits){
     digit.onmouseup=function(){
         if(tempText.includes('.') && digit.innerHTML=='.' || digit.innerHTML=='Del') return
-        // if(/[)|%]/g.test(displayText.charAt(displayText.length-1))){
-        //     tempText+=digit.innerHTML
-        //     displayText+=digit.innerHTML
-        //     currentProblem.innerHTML=displayText
-        // }
+        if(/[)|%]/g.test(displayText.charAt(displayText.length-1))) displayText+=' x '
         if(!(tempText.includes('%'))){
             tempText+=digit.innerHTML
             displayText+=digit.innerHTML
@@ -65,79 +63,134 @@ deleteButton.onmouseup=function(){
 
 for(const operator of basicOperators){
     operator.onmouseup=function(){
-        if(/[0-9]/g.test(tempText)){
-        displayText+=' '+operator.innerHTML+' '
-        currentProblem.innerHTML=displayText
-        currentText.push(tempText)
-        currentText.push(operator.innerHTML)
-        tempText=''
+        if(/[0-9|%|.|)]/g.test(displayText.charAt(displayText.length-1))){
+            displayText+=' '+operator.innerHTML+' '
+            currentProblem.innerHTML=displayText
+        }
+        else if(/[x|/|+\-]/g.test(displayText.charAt(displayText.length-2))){
+            displayText=displayText.slice(0,-2)
+            displayText+=operator.innerHTML+' '
+            currentProblem.innerHTML=displayText
+            console.log('uhu')
+        }
     }
-}}
+}
+
 
 let emptyIndexesFiltered=''
 
 
 chooseInteger.onmouseup=function(){
-    let index=displayText.lastIndexOf(tempText)
-    if(!(tempText.includes('-')))  tempText='-'+tempText 
-    else tempText=tempText.replace('-','')
-    displayText=displayText.slice(0,index) + tempText
-    currentProblem.innerHTML=displayText
-    currentText=displayText.split(' ')
+    console.log(displayText)
+    if(displayText.slice(-1)=='-'){
+        displayText=displayText.slice(0,-1)
+        currentProblem.innerHTML=displayText
+    }
+    else if(displayText.slice(-1)==' ' || displayText==''){
+        displayText+='-'
+        currentProblem.innerHTML=displayText
+    }
+    else if(/[0-9|.|%|(]/.test(displayText.slice(-1))){
+        let index=displayText.lastIndexOf(' ')
+        let leftParentIndex=displayText.lastIndexOf('(')
+        console.log(index + '' + leftParentIndex)
+        if(index>leftParentIndex){
+            if(/[0-9|%|.]/.test(displayText.slice(index+1,index+2))){
+                displayText=displayText.slice(0,index+1) + '-' + displayText.slice(index+1)
+                currentProblem.innerHTML=displayText
+            }
+            else if(displayText.slice(index+1,index+2)=='-') {
+                displayText=displayText.slice(0,index+1) + displayText.slice(index+2)
+                currentProblem.innerHTML=displayText
+            }
+        }
+        else {
+            console.log('sj')
+            if(displayText.slice(-1)=='('){
+                displayText+='-'
+                currentProblem.innerHTML=displayText
+            }
+            else if(/[0-9|.|%]/.test(displayText.charAt(leftParentIndex+1))){
+                displayText=displayText.slice(0,leftParentIndex+1) + '-' + displayText.slice(leftParentIndex+1)
+                currentProblem.innerHTML=displayText
+            }
+            else if(displayText.charAt(leftParentIndex+1)=='-') {
+                displayText=displayText.slice(0,leftParentIndex+1) + displayText.slice(leftParentIndex+2)
+                currentProblem.innerHTML=displayText
+            }
+        }
+    }
+
 }
 
 percentage.onmouseup=function(){
-    if(/[(]/g.test(displayText.charAt(displayText.length-1))) return
-    if(/[0-9]/g.test(tempText)){
-        let index=displayText.lastIndexOf(tempText)
-        if(!(tempText.includes('%')))  tempText+='%' 
-        else tempText=tempText.replace('%','')
-        displayText=displayText.slice(0,index) + tempText
+    if(
+        /[(]/g.test(displayText.charAt(displayText.length-1)) ||
+        (/[.]/g.test(displayText.charAt(displayText.length-1)) && /[^0-9|]/g.test(displayText.charAt(displayText.length-2)))) return
+
+    if(/[0-9|.| |\-]/g.test(displayText.charAt(displayText.length-1))){
+        displayText+='%'
         currentProblem.innerHTML=displayText
-    }}
+    }
+    else if(/[)]/g.test(displayText.charAt(displayText.length-1))){
+        displayText+=' x %'
+        currentProblem.innerHTML=displayText
+    }
+    else if(/[%]/g.test(displayText.charAt(displayText.length-1))){
+        displayText=displayText.slice(0,-1)
+        currentProblem.innerHTML=displayText
+    }
+}
 
 rightParentheses.onmouseup=function(){
     if(/[(]/g.test(displayText.charAt(displayText.length-1))) return
     if(parentCounter>=1){
-    parentCounter--
-    tempText+=rightParentheses.innerHTML
-    displayText+=rightParentheses.innerHTML
-    currentProblem.innerHTML=displayText
-}}
+        parentCounter--
+        tempText+=rightParentheses.innerHTML
+        displayText+=rightParentheses.innerHTML
+        currentProblem.innerHTML=displayText
+    }
+}
+
 leftParentheses.onmouseup=function(){
     if(/[(|.]/g.test(displayText.charAt(displayText.length-1))) return
-    if(/[0-9]/g.test(displayText.charAt(displayText.length-1)) || displayText.charAt(displayText.length-1)==')'){
+    if(/[0-9|(|)|%]/g.test(displayText.charAt(displayText.length-1))){
         tempText+=' x '+leftParentheses.innerHTML
         displayText+=' x '+leftParentheses.innerHTML
         currentProblem.innerHTML=displayText
         parentCounter++
     }
     else{
-    tempText+=leftParentheses.innerHTML
-    displayText+=leftParentheses.innerHTML
-    currentProblem.innerHTML=displayText
-    parentCounter++
-}}
+        tempText+=leftParentheses.innerHTML
+        displayText+=leftParentheses.innerHTML
+        currentProblem.innerHTML=displayText
+        parentCounter++
+    }
+}
 
 
 
 
 
 equal.onmouseup=function(){
-    if(/[0-9]/g.test(tempText) && (currentText.length>1 || tempText.includes('%') )){
-    currentText.push(tempText)
-    solveParent()
-    currentText=displayText.split(' ')
-    solvePercents()
-    solveMultiplicationAndDivision()
-    emptyIndexesFiltered=currentText.filter(value => (!(value=='')))
-    solveAdditionAndSubtraction()
-    previousProblem.innerHTML=displayText
-    currentProblem.innerHTML='= '+answer
-    // console.log(displayText)
-    // console.log(currentText)
-    clear()
-}}
+    if(/[0-9]/.test(displayText)){
+        if((/[0-9|.|)]/.test(displayText.charAt(displayText.length-1))) || displayText.includes('%') ){
+            for(;parentCounter>=1;parentCounter--){
+                displayText=displayText+')'
+            }
+            previousProblem.innerHTML=displayText
+            solveParent()
+            currentText=displayText.split(' ')
+            solvePercents()
+            solveMultiplicationAndDivision()
+            emptyIndexesFiltered=currentText.filter(value => (!(value=='')))
+            solveAdditionAndSubtraction()
+            if(!(/[ |%]/.test(displayText))) currentProblem.innerHTML='= '+displayText
+            else currentProblem.innerHTML='= '+answer
+            clear()
+        }
+    }
+}
 
 clearButton.onmouseup=function(){
     clear()
@@ -163,25 +216,26 @@ solveParent=function(){
     //     },0)
     while(displayText.includes('(')){
         let trueIndex=displayText.lastIndexOf('(')
-        // console.log('boof=  '+boof)
         noof=displayText.indexOf(')',trueIndex)
         let doof=displayText.slice(trueIndex, noof+1)
         console.log('doof     '+doof)
         currentText=doof.replace(/[)(]/g,'').split(' ')
         currentText=currentText.filter(value => (!(value==' ')))
-        solvePercents()
-        solveMultiplicationAndDivision()
-        emptyIndexesFiltered=currentText.filter(value => (!(value=='')))
-        solveAdditionAndSubtraction()
+        console.log('ct     '+currentText)
+        if(currentText.length>1){
+            solvePercents()
+            solveMultiplicationAndDivision()
+            emptyIndexesFiltered=currentText.filter(value => (!(value=='')))
+            solveAdditionAndSubtraction()
+        }
+        else answer=currentText
         displayText=displayText.replace(doof,answer)
         console.log('answer    '+answer)
         boof=0
         console.log('noof   '+noof)
-console.log('displaytext        '+displayText)
+        console.log('displaytext        '+displayText)
         currentText=displayText.split('')
     }
-
-
 }
 
 solveAdditionAndSubtraction= function(){
@@ -205,6 +259,9 @@ solveAdditionAndSubtraction= function(){
 solveMultiplicationAndDivision =function(){
     currentText=currentText.map(item => item.includes('--') ? item.replace('--',''): item)
     console.log(currentText)
+    // for(i=0;i<currentText.length-1;i++){
+    //     if
+    // }
     for(i=0;i<currentText.length-2;i+=2){
         if(currentText[i+1]=='x'){
             console.log(currentText)
@@ -227,10 +284,18 @@ solveMultiplicationAndDivision =function(){
 
 solvePercents=function(){
     for(i=0;i<currentText.length;i++){
+        console.log(currentText)
+        if(currentText[i]=='%'){
+            currentText[i]='0.01'
+        }
+        else if(currentText[i]=='-%'){
+            currentText[i]='-0.01'
+        }
+        console.log(currentText)
         if(currentText[i].includes('%')){
             currentText[i]=currentText[i].replace('%','')
             answer=Number(currentText[i])/100
-            currentText[i]=answer.toFixed(currentText[i].length+1)
+            currentText[i]=answer.toFixed(currentText[i].length+2)
         }
     }
 }
@@ -283,16 +348,5 @@ sliderBox.onmouseup=function(){
 
 
 
-
-
-
-// .2\cdot (22-3/33\cdot (256-3/2\cdot (25-2)\cdot (22-3)\cdot (2-2)))
-
-
-
-
-
-
-// (256 - 3 / 2 x (25 - 2) x (22 - 3) x (2 - 2)))
 
 
