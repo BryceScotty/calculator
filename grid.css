@@ -177,3 +177,6 @@ button:hover{
 .equalANDclearAllWHiteMode{
     box-shadow:-3px -3px 5px -4px rgb(255, 255, 255), 3px 3px 15px -8px rgb(0, 0, 0);
 }
+.problemHolder{
+    display:flex;
+}

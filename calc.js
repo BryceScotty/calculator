@@ -1,3 +1,5 @@
+const problemHolder=document.querySelector('.problemHolder')
+
 const digits=document.querySelectorAll('.digit')
 const basicOperators=document.querySelectorAll('.operator')
 const specialOperators=document.querySelectorAll('.orange')
@@ -13,6 +15,8 @@ const bottomHalf=document.querySelector('.bottomHalf')
 const screen=document.querySelector('.screen')
 const leftParentheses=document.querySelector('.leftParentheses')
 const rightParentheses=document.querySelector('.rightParentheses')
+const powers=document.querySelector('.powers')
+
 
 // let ayo=prompt('enter number','')
 
@@ -30,19 +34,28 @@ let parentCounter=0
 
 for(const digit of digits){
     digit.onmouseup=function(){
-        if(tempText.includes('.') && digit.innerHTML=='.' || digit.innerHTML=='Del') return
+        if(digit.innerHTML=='.' || digit.innerHTML=='Del') return
         if(/[)|%]/g.test(displayText.charAt(displayText.length-1))) displayText+=' x '
-        if(!(tempText.includes('%'))){
-            tempText+=digit.innerHTML
-            displayText+=digit.innerHTML
-            currentProblem.innerHTML=displayText
+        displayText+=digit.innerHTML
+        currentProblem.innerHTML=displayText
     }
-}}
+}
+
+decimal.onmouseup=function(){
+    let lastDecimalIndex=displayText.lastIndexOf('.')
+    if(displayText.lastIndexOf(' ')>lastDecimalIndex || displayText.lastIndexOf('(')>lastDecimalIndex || !/[ |.]/.test(displayText)){
+        if(/[)|%]/.test(displayText.slice(-1))){
+            displayText+=' x ' + decimal.innerHTML
+            currentProblem.innerHTML=displayText
+        }
+        else{
+        displayText+=decimal.innerHTML
+        currentProblem.innerHTML=displayText
+        }
+    }
+}
 
 deleteButton.onmouseup=function(){
-    if(displayText.slice(-1)==' '){
-        displayText=displayText.slice(0,-2)
-    }
     if(displayText.slice(-1)==')'){
         parentCounter++
         console.log(parentCounter)
@@ -51,19 +64,20 @@ deleteButton.onmouseup=function(){
         parentCounter--
         console.log(parentCounter)
     }
+    if(displayText.slice(-1)==' '){
+        displayText=displayText.slice(0,-3)
+        currentProblem.innerHTML=displayText
+    }
+    else {
     displayText=displayText.slice(0,-1)
     currentProblem.innerHTML=displayText
-    currentText=displayText.split(' ')
-    tempText=currentText[currentText.length-1]
-    console.log(displayText)
-    console.log(currentText)
-
-    console.log('yxu')
+    }
 }
 
 for(const operator of basicOperators){
     operator.onmouseup=function(){
-        if(/[0-9|%|.|)]/g.test(displayText.charAt(displayText.length-1))){
+        if(/[.]/g.test(displayText.charAt(displayText.length-1)) && (/[^0-9|]/g.test(displayText.charAt(displayText.length-2)) || displayText.length<=2)) return
+        else if(/[0-9|%|.|)]/g.test(displayText.charAt(displayText.length-1))){
             displayText+=' '+operator.innerHTML+' '
             currentProblem.innerHTML=displayText
         }
@@ -89,6 +103,28 @@ chooseInteger.onmouseup=function(){
     else if(displayText.slice(-1)==' ' || displayText==''){
         displayText+='-'
         currentProblem.innerHTML=displayText
+    }
+    else if(displayText.slice(-1)==')'){
+        let integerParenthesesCounter=1
+        for(i=displayText.length-2;integerParenthesesCounter>0;i--){
+            if (displayText[i]==')') integerParenthesesCounter++
+            else if (displayText[i]=='('){
+                integerParenthesesCounter--
+                if(integerParenthesesCounter==0){
+                    console.log(displayText[i])
+                    if(!(displayText[i-1]=='-')){
+                        displayText=displayText.slice(0,i) + '-'+ displayText.slice(i)
+                        currentProblem.innerHTML=displayText
+                    }
+                    else if(displayText[i-1]=='-'){
+                        displayText=displayText.slice(0,i-1) + displayText.slice(i)
+                        currentProblem.innerHTML=displayText
+                    }
+                }
+            }
+        }
+        
+
     }
     else if(/[0-9|.|%|(]/.test(displayText.slice(-1))){
         let index=displayText.lastIndexOf(' ')
@@ -124,11 +160,15 @@ chooseInteger.onmouseup=function(){
 }
 
 percentage.onmouseup=function(){
-    if(
-        /[(]/g.test(displayText.charAt(displayText.length-1)) ||
-        (/[.]/g.test(displayText.charAt(displayText.length-1)) && /[^0-9|]/g.test(displayText.charAt(displayText.length-2)))) return
-
-    if(/[0-9|.| |\-]/g.test(displayText.charAt(displayText.length-1))){
+    if(displayText=='' || displayText.slice(-1)=='('){
+        console.log('sjsj')
+        displayText+='%'
+        console.log(displayText)
+        currentProblem.innerHTML=displayText
+        console.log(currentProblem.innerHTML)
+    }
+    else if(/[.]/g.test(displayText.charAt(displayText.length-1)) && (/[^0-9|]/g.test(displayText.charAt(displayText.length-2)) || displayText.length<=2)) return
+    else if(/[0-9|.| |\-]/g.test(displayText.charAt(displayText.length-1))){
         displayText+='%'
         currentProblem.innerHTML=displayText
     }
@@ -144,24 +184,23 @@ percentage.onmouseup=function(){
 
 rightParentheses.onmouseup=function(){
     if(/[(]/g.test(displayText.charAt(displayText.length-1))) return
+    else if(/[.]/g.test(displayText.charAt(displayText.length-1)) && (/[^0-9|]/g.test(displayText.charAt(displayText.length-2)) || displayText.length<=2)) return
     if(parentCounter>=1){
         parentCounter--
-        tempText+=rightParentheses.innerHTML
         displayText+=rightParentheses.innerHTML
         currentProblem.innerHTML=displayText
     }
 }
 
 leftParentheses.onmouseup=function(){
-    if(/[(|.]/g.test(displayText.charAt(displayText.length-1))) return
-    if(/[0-9|(|)|%]/g.test(displayText.charAt(displayText.length-1))){
-        tempText+=' x '+leftParentheses.innerHTML
+    if(/[(]/g.test(displayText.charAt(displayText.length-1))) return
+    else if(/[.]/g.test(displayText.charAt(displayText.length-1)) && (/[^0-9|]/g.test(displayText.charAt(displayText.length-2)) || displayText.length<=2)) return
+    if(/[0-9|(|)|%|.]/g.test(displayText.charAt(displayText.length-1))){
         displayText+=' x '+leftParentheses.innerHTML
         currentProblem.innerHTML=displayText
         parentCounter++
     }
     else{
-        tempText+=leftParentheses.innerHTML
         displayText+=leftParentheses.innerHTML
         currentProblem.innerHTML=displayText
         parentCounter++
@@ -170,11 +209,28 @@ leftParentheses.onmouseup=function(){
 
 
 
+// powers.onmouseup=function(){
+//     const para=document.createElement("span")
+//     para.innerHTML='sjsj'
+//     para.style='height: 80%, display:flex'
+//     problemHolder.appendChild(para)
+//     console.log('sjs')
+//     // const brum=document.createElement('span')
+//     // brum.innerHTML='sksk'
+//     // brum.style.height="80%"
+//     // currentProblem.appendChild(brum)
+// }
 
+powers.onmouseup=function(){
+    displayText+=powers.innerHTML
+    currentProblem.innerHTML=displayText
+
+}
 
 equal.onmouseup=function(){
     if(/[0-9]/.test(displayText)){
-        if((/[0-9|.|)]/.test(displayText.charAt(displayText.length-1))) || displayText.includes('%') ){
+        if(/[0-9|.|)|%]/.test(displayText.slice(-1))){
+            if(/[.]/g.test(displayText.charAt(displayText.length-1)) && (/[^0-9|]/g.test(displayText.charAt(displayText.length-2)) || displayText.length<=2)) return
             for(;parentCounter>=1;parentCounter--){
                 displayText=displayText+')'
             }
