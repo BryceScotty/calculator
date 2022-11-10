@@ -18,19 +18,21 @@ const rightParentheses=document.querySelector('.rightParentheses')
 const powers=document.querySelector('.powers')
 
 
-// let ayo=prompt('enter number','')
+let ayo=prompt('enter number','')
 
 let currentText=[]
 
 let tempText=''
 
-let displayText=''
+let displayText=ayo
 
 let answer=''
 
 let backSearch=''
 
 let parentCounter=0
+
+let numberNegative=''
 
 for(const digit of digits){
     digit.onmouseup=function(){
@@ -222,9 +224,9 @@ leftParentheses.onmouseup=function(){
 // }
 
 powers.onmouseup=function(){
+    if(displayText.slice(-1)=='^') return
     displayText+=powers.innerHTML
     currentProblem.innerHTML=displayText
-
 }
 
 equal.onmouseup=function(){
@@ -237,12 +239,14 @@ equal.onmouseup=function(){
             previousProblem.innerHTML=displayText
             solveParent()
             currentText=displayText.split(' ')
+            solveExponents()
             solvePercents()
             solveMultiplicationAndDivision()
             emptyIndexesFiltered=currentText.filter(value => (!(value=='')))
             solveAdditionAndSubtraction()
-            if(!(/[ |%]/.test(displayText))) currentProblem.innerHTML='= '+displayText
+            if(!(/[ |%|^]/.test(displayText))) currentProblem.innerHTML='= '+displayText
             else currentProblem.innerHTML='= '+answer
+            if(/[-\-]/.test(currentProblem.innerHTML)) currentProblem.innerHTML=currentProblem.innerHTML.replaceAll('--','')
             clear()
         }
     }
@@ -251,6 +255,26 @@ equal.onmouseup=function(){
 clearButton.onmouseup=function(){
     clear()
     currentProblem.innerHTML=''
+}
+
+
+solveExponents=function(){
+    console.log('xxx   '+displayText)
+    for(i=0;i<=currentText.length-1;i++){
+        console.log(currentText)
+        if(/[\^]/.test(currentText[i])){
+            console.log(currentText[i])
+            let currentTextSubArray=currentText[i].split('^')
+            console.log(currentTextSubArray)
+            for(j=currentTextSubArray.length-2;j>=0;j--){
+            console.log(j)
+            answer=Number(currentTextSubArray[j])**Number(currentTextSubArray[j+1])
+            currentTextSubArray[j]=String(answer)
+            console.log(currentTextSubArray)
+            if(j==0) currentText[i]=currentTextSubArray[i]
+            }
+        }
+    }
 }
 
 let boof=0
@@ -279,13 +303,16 @@ solveParent=function(){
         currentText=currentText.filter(value => (!(value==' ')))
         console.log('ct     '+currentText)
         if(currentText.length>1){
+            solveExponents()
             solvePercents()
             solveMultiplicationAndDivision()
             emptyIndexesFiltered=currentText.filter(value => (!(value=='')))
             solveAdditionAndSubtraction()
         }
+        else if(doof.includes('^')) solveExponents()
         else answer=currentText
-        displayText=displayText.replace(doof,answer)
+        if(displayText.charAt(trueIndex-1)=='-') displayText
+        else displayText=displayText.replace(doof,answer)
         console.log('answer    '+answer)
         boof=0
         console.log('noof   '+noof)
@@ -306,7 +333,7 @@ solveAdditionAndSubtraction= function(){
         if(emptyIndexesFiltered[i+1]=='-'){
             console.log(emptyIndexesFiltered)
             answer=Number(emptyIndexesFiltered[i])-Number(emptyIndexesFiltered[i+2])
-            emptyIndexesFiltered[i+2]=answer
+            emptyIndexesFiltered[i+2]=String(answer)
             console.log(emptyIndexesFiltered)
         }
     }
@@ -348,7 +375,7 @@ solvePercents=function(){
             currentText[i]='-0.01'
         }
         console.log(currentText)
-        if(currentText[i].includes('%')){
+        if(/[%]/.test(currentText[i])){
             currentText[i]=currentText[i].replace('%','')
             answer=Number(currentText[i])/100
             currentText[i]=answer.toFixed(currentText[i].length+2)
