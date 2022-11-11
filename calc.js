@@ -239,6 +239,8 @@ equal.onmouseup=function(){
             previousProblem.innerHTML=displayText
             solveParent()
             currentText=displayText.split(' ')
+            console.log(currentText)
+            console.log(displayText)
             solveExponents()
             solvePercents()
             solveMultiplicationAndDivision()
@@ -256,28 +258,54 @@ clearButton.onmouseup=function(){
     clear()
     currentProblem.innerHTML=''
 }
+let tempBlog=''
 
 
 solveExponents=function(){
     console.log('xxx   '+displayText)
-    for(i=0;i<=currentText.length-1;i++){
-        console.log(currentText)
-        if(/[\^]/.test(currentText[i])){
-            console.log(currentText[i])
-            let currentTextSubArray=currentText[i].split('^')
+    console.log(currentText)
+    tempBlog=currentText
+    for(i=0;i<currentText.length;i++){
+        console.log('ye')
+        if(currentText[i].includes('^')){
+            let currentTextSubArray=currentText[i].split(/[\^|(]/)
             console.log(currentTextSubArray)
             for(j=currentTextSubArray.length-2;j>=0;j--){
-            console.log(j)
-            answer=Number(currentTextSubArray[j])**Number(currentTextSubArray[j+1])
-            currentTextSubArray[j]=String(answer)
-            console.log(currentTextSubArray)
-            if(j==0) currentText[i]=currentTextSubArray[i]
+                console.log('parent!!!  ' +currentTextSubArray[j])
+                if(currentTextSubArray[j].includes(')') ){
+                    currentTextSubArray[j]=currentTextSubArray[j].replace(')','')
+                    currentTextSubArray[j]=Number(currentTextSubArray[j])**Number(currentTextSubArray[j+1])
+                }
+                // else if(currentTextSubArray[j].includes('--')){
+                //     currentTextSubArray[j]=currentTextSubArray[j].replace('-','')
+                //     console.log(currentTextSubArray)
+                //     currentTextSubArray[j]=(Number(currentTextSubArray[j])**Number(currentTextSubArray[j+1]))*-1
+                // }
+                else if (currentTextSubArray[j]=='-') {
+                    console.log(currentTextSubArray[j])
+                    console.log(currentTextSubArray[j+1])
+                    currentTextSubArray[j]=-1*Number(currentTextSubArray[j+1])
+                }
+                else if (currentTextSubArray[j].includes('-') && !/[)]/.test(currentTextSubArray[j])) {
+                    currentTextSubArray[j]=currentTextSubArray[j].replace('-','')
+                    currentTextSubArray[j]=(Number(currentTextSubArray[j])**Number(currentTextSubArray[j+1]))*-1
+                }
+                else{
+                    currentTextSubArray[j]=Number(currentTextSubArray[j])**Number(currentTextSubArray[j+1])
+                }
+                currentTextSubArray[j+1]=''
+                currentTextSubArray=currentTextSubArray.filter(value => (!(value==' ')))
+                console.log(currentTextSubArray)
+                currentText[i]=String(currentTextSubArray[j])
+                answer=String(currentTextSubArray[j])
             }
         }
     }
+    displayText=displayText.replace(tempBlog,currentText.join(' '))
 }
 
 let boof=0
+
 solveParent=function(){
     currentText=displayText.split('')
     // while(displayText.includes('(')){
@@ -296,23 +324,36 @@ solveParent=function(){
     //     },0)
     while(displayText.includes('(')){
         let trueIndex=displayText.lastIndexOf('(')
-        noof=displayText.indexOf(')',trueIndex)
+        let noof=displayText.indexOf(')',trueIndex)
         let doof=displayText.slice(trueIndex, noof+1)
         console.log('doof     '+doof)
-        currentText=doof.replace(/[)(]/g,'').split(' ')
+        currentText=doof.replace(/[)|(]/g,'').split(' ')
         currentText=currentText.filter(value => (!(value==' ')))
         console.log('ct     '+currentText)
+        solveExponents()
         if(currentText.length>1){
-            solveExponents()
             solvePercents()
             solveMultiplicationAndDivision()
             emptyIndexesFiltered=currentText.filter(value => (!(value=='')))
             solveAdditionAndSubtraction()
         }
-        else if(doof.includes('^')) solveExponents()
         else answer=currentText
-        if(displayText.charAt(trueIndex-1)=='-') displayText
-        else displayText=displayText.replace(doof,answer)
+        console.log(answer)
+        console.log(displayText.charAt(trueIndex-1))
+        console.log(displayText.charAt(noof+1))
+        // if(displayText.charAt(displayText.charAt(noof+1)=='^')){
+        //     displayText=displayText.replace(doof,'('+answer+')')
+        //     console.log('exp     '+displayText)
+        //     if (displayText.charAt(trueIndex-1)=='-'){
+        //         currentText=displayText.slice(trueIndex-1)
+        //         tempBlog=currentText
+        //     }
+        //     else currentText=displayText.slice(trueIndex)
+        //     solveExponents()
+        //     console.log('NOOOF'+   noof)
+        //     displayText=displayText.replace(tempBlog,currentText)
+        // }
+        displayText=displayText.replace(doof,answer)
         console.log('answer    '+answer)
         boof=0
         console.log('noof   '+noof)
