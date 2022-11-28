@@ -1,5 +1,4 @@
 const problemHolder=document.querySelector('.problemHolder')
-
 const digits=document.querySelectorAll('.digit')
 const basicOperators=document.querySelectorAll('.operator')
 const specialOperators=document.querySelectorAll('.orange')
@@ -22,30 +21,47 @@ let ayo=prompt('enter number','')
 
 let currentText=[]
 
-let tempText=''
-
 let displayText=ayo
 
 let answer=''
 
-let backSearch=''
-
 let parentCounter=0
 
-let numberNegative=''
+let imaginaryNumbers=false
+
+let problemCounter=0
+
 
 for(const digit of digits){
     digit.onmouseup=function(){
         if(digit.innerHTML=='.' || digit.innerHTML=='Del') return
         if(/[)|%]/g.test(displayText.charAt(displayText.length-1))) displayText+=' x '
+        console.log(Math.sqrt((2)))
         displayText+=digit.innerHTML
         currentProblem.innerHTML=displayText
     }
 }
 
+for(const operator of basicOperators){
+    operator.onmouseup=function(){
+        if(/[.]/g.test(displayText.charAt(displayText.length-1)) && (/[^0-9|]/g.test(displayText.charAt(displayText.length-2)) || displayText.length<=2)) return
+        else if(/[0-9|%|.|)]/g.test(displayText.charAt(displayText.length-1))){
+            displayText+=' '+operator.innerHTML+' '
+            currentProblem.innerHTML=displayText
+        }
+        else if(/[x|/|+\-]/g.test(displayText.charAt(displayText.length-2))){
+            displayText=displayText.slice(0,-2)
+            displayText+=operator.innerHTML+' '
+            currentProblem.innerHTML=displayText
+            console.log('uhu')
+        }
+    }
+}
+
 decimal.onmouseup=function(){
     let lastDecimalIndex=displayText.lastIndexOf('.')
-    if(displayText.lastIndexOf(' ')>lastDecimalIndex || displayText.lastIndexOf('(')>lastDecimalIndex || !/[ |.]/.test(displayText)){
+    let lastPower=displayText.lastIndexOf('^')
+    if(displayText.lastIndexOf(' ')>lastDecimalIndex || displayText.lastIndexOf('(')>lastDecimalIndex || !/[ |.]/.test(displayText)  || lastDecimalIndex<lastPower){
         if(/[)|%]/.test(displayText.slice(-1))){
             displayText+=' x ' + decimal.innerHTML
             currentProblem.innerHTML=displayText
@@ -76,22 +92,6 @@ deleteButton.onmouseup=function(){
     }
 }
 
-for(const operator of basicOperators){
-    operator.onmouseup=function(){
-        if(/[.]/g.test(displayText.charAt(displayText.length-1)) && (/[^0-9|]/g.test(displayText.charAt(displayText.length-2)) || displayText.length<=2)) return
-        else if(/[0-9|%|.|)]/g.test(displayText.charAt(displayText.length-1))){
-            displayText+=' '+operator.innerHTML+' '
-            currentProblem.innerHTML=displayText
-        }
-        else if(/[x|/|+\-]/g.test(displayText.charAt(displayText.length-2))){
-            displayText=displayText.slice(0,-2)
-            displayText+=operator.innerHTML+' '
-            currentProblem.innerHTML=displayText
-            console.log('uhu')
-        }
-    }
-}
-
 
 let emptyIndexesFiltered=''
 
@@ -102,7 +102,7 @@ chooseInteger.onmouseup=function(){
         displayText=displayText.slice(0,-1)
         currentProblem.innerHTML=displayText
     }
-    else if(displayText.slice(-1)==' ' || displayText==''){
+    else if(/[ |^]/.test(displayText.slice(-1)) || displayText==''){
         displayText+='-'
         currentProblem.innerHTML=displayText
     }
@@ -125,8 +125,6 @@ chooseInteger.onmouseup=function(){
                 }
             }
         }
-        
-
     }
     else if(/[0-9|.|%|(]/.test(displayText.slice(-1))){
         let index=displayText.lastIndexOf(' ')
@@ -158,7 +156,6 @@ chooseInteger.onmouseup=function(){
             }
         }
     }
-
 }
 
 percentage.onmouseup=function(){
@@ -210,21 +207,8 @@ leftParentheses.onmouseup=function(){
 }
 
 
-
-// powers.onmouseup=function(){
-//     const para=document.createElement("span")
-//     para.innerHTML='sjsj'
-//     para.style='height: 80%, display:flex'
-//     problemHolder.appendChild(para)
-//     console.log('sjs')
-//     // const brum=document.createElement('span')
-//     // brum.innerHTML='sksk'
-//     // brum.style.height="80%"
-//     // currentProblem.appendChild(brum)
-// }
-
 powers.onmouseup=function(){
-    if(displayText.slice(-1)=='^') return
+    if(/[-|^| |(]/.test(displayText.slice(-1)) || displayText.length==0) return
     displayText+=powers.innerHTML
     currentProblem.innerHTML=displayText
 }
@@ -236,17 +220,22 @@ equal.onmouseup=function(){
             for(;parentCounter>=1;parentCounter--){
                 displayText=displayText+')'
             }
-            previousProblem.innerHTML=displayText
+            problemCounter++
+            const problemHolder=document.createElement('p')
+            problemHolder.classList.add('problem'+problemCounter)
+            screen.appendChild(problemHolder)
+            previousProblem.innerHTML=currentProblem.innerHTML
             solveParent()
             currentText=displayText.split(' ')
             console.log(currentText)
             console.log(displayText)
             solveExponents()
-            solvePercents()
+            solvePercents(currentText)
             solveMultiplicationAndDivision()
             emptyIndexesFiltered=currentText.filter(value => (!(value=='')))
             solveAdditionAndSubtraction()
-            if(!(/[ |%|^]/.test(displayText))) currentProblem.innerHTML='= '+displayText
+            if(imaginaryNumbers) currentProblem.innerHTML='Answer Included Imaginary Numbers'
+            else if(!(/[ |%|^]/.test(displayText))) currentProblem.innerHTML='= '+displayText
             else currentProblem.innerHTML='= '+answer
             if(/[-\-]/.test(currentProblem.innerHTML)) currentProblem.innerHTML=currentProblem.innerHTML.replaceAll('--','')
             clear()
@@ -254,33 +243,46 @@ equal.onmouseup=function(){
     }
 }
 
+transferProblemNumbers=function(){
+    
+}
+
 clearButton.onmouseup=function(){
     clear()
     currentProblem.innerHTML=''
 }
-let tempBlog=''
 
+let tempBlog=''
 
 solveExponents=function(){
     console.log('xxx   '+displayText)
     console.log(currentText)
-    tempBlog=currentText
+    tempBlog=String(currentText)
     for(i=0;i<currentText.length;i++){
         console.log('ye')
         if(currentText[i].includes('^')){
-            let currentTextSubArray=currentText[i].split(/[\^|(]/)
-            console.log(currentTextSubArray)
+            let currentTextSubArray=currentText[i].replace('(','').split(/[\^|(]/)
+            solvePercents(currentTextSubArray)
             for(j=currentTextSubArray.length-2;j>=0;j--){
-                console.log('parent!!!  ' +currentTextSubArray[j])
+                console.log('parent!!!  ' +currentTextSubArray[j+1])
+                let dotIndex=currentTextSubArray[j+1].indexOf('.')
+                let postDecimal=''
+                if(dotIndex>-1){
+                    postDecimal=currentTextSubArray[j+1].slice(dotIndex)
+                }
+                else postDecimal=0
+                console.log(postDecimal)
+                if(currentTextSubArray[j].includes('-') && /[(|)]/.test(currentTextSubArray[j]) && /[1-9]/.test(postDecimal)){
+                    imaginaryNumbers=true
+                }
+                if(/[)]/.test(currentTextSubArray[j+1])) currentTextSubArray[j+1]=currentTextSubArray[j+1].replaceAll(')','')
+                if(currentTextSubArray[j+1].includes('--')) currentTextSubArray[j+1]=currentTextSubArray[j+1].replaceAll('--','')
+                // if(/[--]/.test(currentTextSubArray[j])) currentTextSubArray[j].replaceAll('--','')
                 if(currentTextSubArray[j].includes(')') ){
                     currentTextSubArray[j]=currentTextSubArray[j].replace(')','')
                     currentTextSubArray[j]=Number(currentTextSubArray[j])**Number(currentTextSubArray[j+1])
+                    console.log('beep')
                 }
-                // else if(currentTextSubArray[j].includes('--')){
-                //     currentTextSubArray[j]=currentTextSubArray[j].replace('-','')
-                //     console.log(currentTextSubArray)
-                //     currentTextSubArray[j]=(Number(currentTextSubArray[j])**Number(currentTextSubArray[j+1]))*-1
-                // }
                 else if (currentTextSubArray[j]=='-') {
                     console.log(currentTextSubArray[j])
                     console.log(currentTextSubArray[j+1])
@@ -289,39 +291,36 @@ solveExponents=function(){
                 else if (currentTextSubArray[j].includes('-') && !/[)]/.test(currentTextSubArray[j])) {
                     currentTextSubArray[j]=currentTextSubArray[j].replace('-','')
                     currentTextSubArray[j]=(Number(currentTextSubArray[j])**Number(currentTextSubArray[j+1]))*-1
+
                 }
                 else{
-                    currentTextSubArray[j]=Number(currentTextSubArray[j])**Number(currentTextSubArray[j+1])
+                    currentTextSubArray[j]=Number(currentTextSubArray[j])**Number(currentTextSubArray[j+1])               
                 }
                 currentTextSubArray[j+1]=''
-                currentTextSubArray=currentTextSubArray.filter(value => (!(value==' ')))
+                currentTextSubArray[j]=String(currentTextSubArray[j])
+                currentTextSubArray=currentTextSubArray.filter(value => (!(value=='')))
                 console.log(currentTextSubArray)
-                currentText[i]=String(currentTextSubArray[j])
+                console.log(currentTextSubArray[j])
+                console.log(currentText.length)
+                // if(!displayText.includes(' ')) currentText=Array(currentTextSubArray)
+                currentText[i]=String(currentTextSubArray)
+                console.log(currentText)
                 answer=String(currentTextSubArray[j])
             }
         }
     }
+    console.log(tempBlog)
+    tempBlog=tempBlog.replaceAll(',',' ')
+    console.log(currentText)
+    console.log(displayText)
     displayText=displayText.replace(tempBlog,currentText.join(' '))
+    console.log('jj  '+displayText)
 }
 
 let boof=0
 
 solveParent=function(){
     currentText=displayText.split('')
-    // while(displayText.includes('(')){
-    //     currentText.reduce((value, item, index) =>{
-    //         if(item=='('){
-    //             value++
-    //             if(value>=boof){
-    //                 boof=index
-    //             }
-    //         }
-    //         else if(item==')'){
-    //             value--
-    //         }
-    //         console.log('value    '+value)
-    //         return value
-    //     },0)
     while(displayText.includes('(')){
         let trueIndex=displayText.lastIndexOf('(')
         let noof=displayText.indexOf(')',trueIndex)
@@ -332,7 +331,7 @@ solveParent=function(){
         console.log('ct     '+currentText)
         solveExponents()
         if(currentText.length>1){
-            solvePercents()
+            solvePercents(currentText)
             solveMultiplicationAndDivision()
             emptyIndexesFiltered=currentText.filter(value => (!(value=='')))
             solveAdditionAndSubtraction()
@@ -341,23 +340,35 @@ solveParent=function(){
         console.log(answer)
         console.log(displayText.charAt(trueIndex-1))
         console.log(displayText.charAt(noof+1))
-        // if(displayText.charAt(displayText.charAt(noof+1)=='^')){
-        //     displayText=displayText.replace(doof,'('+answer+')')
-        //     console.log('exp     '+displayText)
-        //     if (displayText.charAt(trueIndex-1)=='-'){
-        //         currentText=displayText.slice(trueIndex-1)
-        //         tempBlog=currentText
-        //     }
-        //     else currentText=displayText.slice(trueIndex)
-        //     solveExponents()
-        //     console.log('NOOOF'+   noof)
-        //     displayText=displayText.replace(tempBlog,currentText)
-        // }
-        displayText=displayText.replace(doof,answer)
+        console.log(displayText)
+        if(displayText.charAt(noof+1)=='^'){
+            displayText=displayText.replace(doof,'('+answer+')')
+            console.log('exp     '+displayText)
+            let spaceIndex=displayText.indexOf(' ',trueIndex)
+            let powerSymbol=displayText.indexOf('^',trueIndex)
+            let firstRightParent=displayText.indexOf(')', powerSymbol)
+            console.log(firstRightParent)
+            console.log(spaceIndex)
+            if(firstRightParent>-1) tempBlog=displayText.slice(trueIndex,firstRightParent)
+            else if(spaceIndex>-1) tempBlog=displayText.slice(trueIndex, displayText.indexOf(' ',trueIndex))
+            else if(spaceIndex==-1) tempBlog=displayText.slice(trueIndex)
+            currentText=tempBlog.split(' ')
+            console.log('temp   '+tempBlog)
+            solveExponents()
+        }
+        else {
+            displayText=displayText.replace(doof,answer)
+            console.log('shit')
+        }
         console.log('answer    '+answer)
-        boof=0
         console.log('noof   '+noof)
         console.log('displaytext        '+displayText)
+
+        // if(boof==5){
+        //     sssssss
+        // }
+        // boof++
+
         currentText=displayText.split('')
     }
 }
@@ -406,33 +417,31 @@ solveMultiplicationAndDivision =function(){
     }
 }
 
-solvePercents=function(){
-    for(i=0;i<currentText.length;i++){
-        console.log(currentText)
-        if(currentText[i]=='%'){
-            currentText[i]='0.01'
+solvePercents=function(arrayOfChoice){
+    for(g=0;g<arrayOfChoice.length;g++){
+        console.log(arrayOfChoice)
+        if(arrayOfChoice[g]=='%'){
+            arrayOfChoice[g]='0.01'
         }
-        else if(currentText[i]=='-%'){
-            currentText[i]='-0.01'
+        else if(arrayOfChoice[g]=='-%'){
+            arrayOfChoice[g]='-0.01'
         }
-        console.log(currentText)
-        if(/[%]/.test(currentText[i])){
-            currentText[i]=currentText[i].replace('%','')
-            answer=Number(currentText[i])/100
-            currentText[i]=answer.toFixed(currentText[i].length+2)
+        console.log(arrayOfChoice)
+        if(/[%]/.test(arrayOfChoice[g])){
+            arrayOfChoice[g]=arrayOfChoice[g].replace('%','')
+            answer=Number(arrayOfChoice[g])/100
+            arrayOfChoice[g]=answer.toFixed(arrayOfChoice[g].length+2)
         }
     }
 }
 
-
 clear =function(){
-    tempText=''
     answer=''
     currentText=[]
     displayText=''
     parentCounter=0
+    imaginaryNumbers=false
 }
-
 
 
 
@@ -440,7 +449,6 @@ clear =function(){
 
 const slider=document.querySelector('.slider')
 const sliderBox=document.querySelector('.theme')
-
 
 sliderBox.onmouseup=function(){
     if(/[a-b]/.test(slider.style.transform)) slider.style.transform=''
@@ -463,14 +471,4 @@ sliderBox.onmouseup=function(){
     clearButton.classList.toggle('equalANDclearAllWHiteMode')
     equal.classList.toggle('equalANDclearAllWHiteMode')
 }
-
-
-
-
-
-
-
-
-
-
 
