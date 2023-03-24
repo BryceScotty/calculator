@@ -5,7 +5,7 @@ const specialOperators=document.querySelectorAll('.orange')
 const clearButton=document.querySelector('.clearAll')
 const currentProblem=document.querySelector('.currentProblem')
 const equal=document.querySelector('.equal')
-const previousProblem=document.querySelector('.previousProblem')
+const previousProblems=document.querySelector('.previousProblems')
 const chooseInteger=document.querySelector('.chooseInteger')
 const percentage=document.querySelector('.percentage')
 const decimal=document.querySelector('.decimal')
@@ -16,12 +16,13 @@ const leftParentheses=document.querySelector('.leftParentheses')
 const rightParentheses=document.querySelector('.rightParentheses')
 const powers=document.querySelector('.powers')
 
+let holders=document.querySelectorAll('.holder')
 
-let ayo=prompt('enter number','')
+// let ayo=prompt('enter number','')
 
 let currentText=[]
 
-let displayText=ayo
+let displayText=''
 
 let answer=''
 
@@ -32,8 +33,10 @@ let imaginaryNumbers=false
 let problemCounter=0
 
 
+
 for(const digit of digits){
     digit.onmouseup=function(){
+        console.log(screen.offsetTop+'yo')
         if(digit.innerHTML=='.' || digit.innerHTML=='Del') return
         if(/[)|%]/g.test(displayText.charAt(displayText.length-1))) displayText+=' x '
         console.log(Math.sqrt((2)))
@@ -223,8 +226,11 @@ equal.onmouseup=function(){
             problemCounter++
             const problemHolder=document.createElement('p')
             problemHolder.classList.add('problem'+problemCounter)
-            screen.appendChild(problemHolder)
-            previousProblem.innerHTML=currentProblem.innerHTML
+            problemHolder.classList.add("holder")
+            previousProblems.appendChild(problemHolder)
+            problemHolder.innerHTML=currentProblem.innerHTML
+            // previousProblem.innerHTML=currentProblem.innerHTML
+            integrateHolders()
             solveParent()
             currentText=displayText.split(' ')
             console.log(currentText)
@@ -250,6 +256,9 @@ transferProblemNumbers=function(){
 clearButton.onmouseup=function(){
     clear()
     currentProblem.innerHTML=''
+    problemCounter=0
+    previousProblems.innerHTML=''
+    screen.style='box-shadow:10px 20px 20px rgb(0, 0, 0);'
 }
 
 let tempBlog=''
@@ -470,5 +479,43 @@ sliderBox.onmouseup=function(){
     equal.classList.toggle('equalANDclearAllWhiteMode')
     clearButton.classList.toggle('equalANDclearAllWHiteMode')
     equal.classList.toggle('equalANDclearAllWHiteMode')
+}
+
+
+integrateHolders=function(){
+    const holders=document.querySelectorAll('.holder')
+    for(const holder of holders){
+        holder.onclick=function(){
+            currentProblem.innerHTML+=holder.innerHTML
+            displayText=currentProblem.innerHTML
+            console.log('yeee')
+        }
+        // bottomHalf.onmouseup=function(){
+        //     console.log(holder.offsetTop)
+        //     if(screen.offsetTop<holder.offsetTop){
+        //         console.log(screen.offsetTop+'screen  '+holder.offsetTop+'holder')
+        //         console.log(holder.textContent)
+        //     }
+        //     if(screen.offsetTop>holder.offsetTop){
+        //         console.log(screen.offsetTop+'screen  '+holder.offsetTop+'holder')
+        //         holder.remove()
+        //         console.log('REMOVED')
+        //     }
+        // }
+    }
+}
+
+window.onload=integrateHolders()
+
+bottomHalf.onmouseup=function(){
+    const holders=document.querySelectorAll('.holder')
+    for(const holder of holders){
+        console.log(screen.offsetTop+'screen  '+holder.offsetTop+'holder')
+        console.log(holder.textContent)
+        if(holder.offsetTop<screen.offsetTop){
+            screen.style='box-shadow:inset 0px 20px 20px -20px white, 10px 20px 20px rgb(0, 0, 0);'
+            holder.remove()
+        }
+    }
 }
 

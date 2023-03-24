@@ -28,6 +28,15 @@
 .currentProblem{
     font-size:2em;
 }
+.previousProblems{
+    display:flex;
+    flex-direction: column;
+    
+}
+.holder{
+    display:flex;
+    margin-left:auto;
+}
 .bottomHalf{
     display:flex;
     flex-direction: column;
