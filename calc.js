@@ -36,7 +36,6 @@ let problemCounter=0
 
 // problems to fix ___
 //transition colors slower
-// make it so that subtracting and adding percents are respective to the number they're tagged with
 // spread comments out about WHY the stuff is there
 // scrollable previous problems possibly?
 
@@ -433,9 +432,6 @@ solveAdditionAndSubtraction= function(){
 solveMultiplicationAndDivision =function(){
     currentText=currentText.map(item => item.includes('--') ? item.replace('--',''): item)
     console.log(currentText)
-    // for(i=0;i<currentText.length-1;i++){
-    //     if
-    // }
     for(i=0;i<currentText.length-2;i+=2){
         if(currentText[i+1]=='x'){
             console.log(currentText)
@@ -456,6 +452,7 @@ solveMultiplicationAndDivision =function(){
     }
 }
 
+
 solvePercents=function(arrayOfChoice){
     for(g=0;g<arrayOfChoice.length;g++){
         console.log(arrayOfChoice)
@@ -465,7 +462,20 @@ solvePercents=function(arrayOfChoice){
         else if(arrayOfChoice[g]=='-%'){
             arrayOfChoice[g]='-0.01'
         }
-        console.log(arrayOfChoice)
+        if(arrayOfChoice[g-1] == '+' && /[%]/.test(arrayOfChoice[g]) && /[^\/x]/.test(arrayOfChoice[g+1])){     //percentage is added or subtracted in proportion to the number its called upon
+            arrayOfChoice[g]=arrayOfChoice[g].replace('%','')
+            answer=Number(arrayOfChoice[g-2]) + Number(arrayOfChoice[g])/100 * Number(arrayOfChoice[g-2])
+            arrayOfChoice[g-2] = '', arrayOfChoice[g-1] = ''
+            arrayOfChoice[g]=answer.toFixed(arrayOfChoice[g].length+2)
+            arrayOfChoice=arrayOfChoice.filter(value => value != '')
+        }
+        if(arrayOfChoice[g-1] == '-' && /[%]/.test(arrayOfChoice[g]) && /[^\/x]/.test(arrayOfChoice[g+1])){
+            arrayOfChoice[g]=arrayOfChoice[g].replace('%','')
+            answer=Number(arrayOfChoice[g-2]) - Number(arrayOfChoice[g])/100 * Number(arrayOfChoice[g-2])
+            arrayOfChoice[g-2] = '', arrayOfChoice[g-1] = ''
+            arrayOfChoice[g]=answer.toFixed(arrayOfChoice[g].length+2)
+            arrayOfChoice=arrayOfChoice.filter(value => value != '')
+        }
         if(/[%]/.test(arrayOfChoice[g])){
             arrayOfChoice[g]=arrayOfChoice[g].replace('%','')
             answer=Number(arrayOfChoice[g])/100
