@@ -18,7 +18,7 @@ const powers=document.querySelector('.powers')
 
 let holders=document.querySelectorAll('.holder')
 
-// let ayo=prompt('enter number','')
+// let ayo=prompt('enter number','')              //for testing values via copy and paste along with the commented variable in the equal function
 
 let currentText=[]
 
@@ -34,11 +34,19 @@ let problemCounter=0
 
 
 
+// problems to fix ___
+//transition colors slower
+// make it so that subtracting and adding percents are respective to the number they're tagged with
+// spread comments out about WHY the stuff is there
+// scrollable previous problems possibly?
+
+
+
 for(const digit of digits){
     digit.onmouseup=function(){
         console.log(screen.offsetTop+'yo')
-        if(digit.innerHTML=='.' || digit.innerHTML=='Del') return
-        if(/[)|%]/g.test(displayText.charAt(displayText.length-1))) displayText+=' x '
+        if(digit.innerHTML=='.' || digit.innerHTML=='Del') return   //different eventlisteners for those 2 below
+        if(/[)|%]/g.test(displayText.charAt(displayText.length-1))) displayText+=' x '  
         console.log(Math.sqrt((2)))
         displayText+=digit.innerHTML
         currentProblem.innerHTML=displayText
@@ -47,7 +55,7 @@ for(const digit of digits){
 
 for(const operator of basicOperators){
     operator.onmouseup=function(){
-        if(/[.]/g.test(displayText.charAt(displayText.length-1)) && (/[^0-9|]/g.test(displayText.charAt(displayText.length-2)) || displayText.length<=2)) return
+        if(/[.]/g.test(displayText.charAt(displayText.length-1)) && (/[^0-9|]/g.test(displayText.charAt(displayText.length-2)) || displayText=='.')) return // halts user from applying an operator to just a '.'
         else if(/[0-9|%|.|)]/g.test(displayText.charAt(displayText.length-1))){
             displayText+=' '+operator.innerHTML+' '
             currentProblem.innerHTML=displayText
@@ -196,7 +204,7 @@ rightParentheses.onmouseup=function(){
 
 leftParentheses.onmouseup=function(){
     if(/[(]/g.test(displayText.charAt(displayText.length-1))) return
-    else if(/[.]/g.test(displayText.charAt(displayText.length-1)) && (/[^0-9|]/g.test(displayText.charAt(displayText.length-2)) || displayText.length<=2)) return
+    else if(/[.]/g.test(displayText.charAt(displayText.length-1)) && (/[^0-9|]/g.test(displayText.charAt(displayText.length-2)) || displayText=='.')) return
     if(/[0-9|(|)|%|.]/g.test(displayText.charAt(displayText.length-1))){
         displayText+=' x '+leftParentheses.innerHTML
         currentProblem.innerHTML=displayText
@@ -217,19 +225,20 @@ powers.onmouseup=function(){
 }
 
 equal.onmouseup=function(){
+    // currentText=ayo
+    // displayText=ayo
     if(/[0-9]/.test(displayText)){
         if(/[0-9|.|)|%]/.test(displayText.slice(-1))){
-            if(/[.]/g.test(displayText.charAt(displayText.length-1)) && (/[^0-9|]/g.test(displayText.charAt(displayText.length-2)) || displayText.length<=2)) return
+            if(/[.]/g.test(displayText.charAt(displayText.length-1)) && (/[^0-9|]/g.test(displayText.charAt(displayText.length-2)))) return
             for(;parentCounter>=1;parentCounter--){
-                displayText=displayText+')'
+                displayText+=')'             //Adds any missing parentheses user didn't input
             }
             problemCounter++
             const problemHolder=document.createElement('p')
             problemHolder.classList.add('problem'+problemCounter)
             problemHolder.classList.add("holder")
             previousProblems.appendChild(problemHolder)
-            problemHolder.innerHTML=currentProblem.innerHTML
-            // previousProblem.innerHTML=currentProblem.innerHTML
+            problemHolder.innerHTML=displayText
             integrateHolders()
             solveParent()
             currentText=displayText.split(' ')
@@ -240,6 +249,8 @@ equal.onmouseup=function(){
             solveMultiplicationAndDivision()
             emptyIndexesFiltered=currentText.filter(value => (!(value=='')))
             solveAdditionAndSubtraction()
+            checkForRoundingErrors(answer)
+            displayText.charAt(displayText.length-1) == '.' ? displayText = displayText.replace('.','') : displayText
             if(imaginaryNumbers) currentProblem.innerHTML='Answer Included Imaginary Numbers'
             else if(!(/[ |%|^]/.test(displayText))) currentProblem.innerHTML='= '+displayText
             else currentProblem.innerHTML='= '+answer
@@ -248,6 +259,25 @@ equal.onmouseup=function(){
         }
     }
 }
+
+ function checkForRoundingErrors(finalAnswer){
+    finalAnswer=finalAnswer.toString().split('')      //finalAnswer was originally a number
+    let decimalIndexOfFinalAnswer = finalAnswer.indexOf('.')
+    let shortenedAnswer=finalAnswer.slice(decimalIndexOfFinalAnswer+1)
+    let firstNonZeroInteger=shortenedAnswer.join().search(/[1-9]/)
+    for(i=firstNonZeroInteger;i<shortenedAnswer.length-1;i++){
+        if (shortenedAnswer[i-2] == 0 && shortenedAnswer[i-1] == 0 && shortenedAnswer[i] == 0) {  
+            shortenedAnswer.splice(i-2)
+            finalAnswer.splice(decimalIndexOfFinalAnswer+1)
+            finalAnswer = finalAnswer.concat(shortenedAnswer).join('')
+            console.log(finalAnswer)
+            displayText = finalAnswer                 //displayText had a different format
+            return                                  //place to add built in precision function
+        }
+    }
+}
+
+
 
 transferProblemNumbers=function(){
     
@@ -350,7 +380,7 @@ solveParent=function(){
         console.log(displayText.charAt(trueIndex-1))
         console.log(displayText.charAt(noof+1))
         console.log(displayText)
-        if(displayText.charAt(noof+1)=='^'){
+        if(displayText.charAt(noof+1)=='^' && displayText.charAt(noof)!=')'){   //added the && because (((2 x (3^07.))^2)) threw an infinite loop
             displayText=displayText.replace(doof,'('+answer+')')
             console.log('exp     '+displayText)
             let spaceIndex=displayText.indexOf(' ',trueIndex)
@@ -518,4 +548,3 @@ bottomHalf.onmouseup=function(){
         }
     }
 }
-
