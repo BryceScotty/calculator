@@ -164,6 +164,7 @@ button:hover{
 }
 .bodyWhiteMode{
     background: linear-gradient(to bottom right,rgb(250, 250, 250)30%,rgb(212, 212, 212));
+    transition: 4s;
 }
 .bottomHalfWhiteMode{
     background: linear-gradient(rgb(255, 255, 255)30%,rgb(238, 238, 238));
@@ -186,6 +187,6 @@ button:hover{
 .equalANDclearAllWHiteMode{
     box-shadow:-3px -3px 5px -4px rgb(255, 255, 255), 3px 3px 15px -8px rgb(0, 0, 0);
 }
-.problemHolder{
+.problem{
     display:flex;
 }

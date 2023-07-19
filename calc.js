@@ -18,7 +18,7 @@ const powers=document.querySelector('.powers')
 
 let holders=document.querySelectorAll('.holder')
 
-// let ayo=prompt('enter number','')              //for testing values via copy and paste along with the commented variable in the equal function
+let ayo=prompt('enter number','')              //for testing values via copy and paste along with the commented variable in the equal function
 
 let currentText=[]
 
@@ -32,10 +32,11 @@ let imaginaryNumbers=false
 
 let problemCounter=0
 
+let isTopShadeAdded = false
+
 
 
 // problems to fix ___
-//transition colors slower
 // spread comments out about WHY the stuff is there
 // scrollable previous problems possibly?
 
@@ -192,7 +193,7 @@ percentage.onmouseup=function(){
 }
 
 rightParentheses.onmouseup=function(){
-    if(/[(]/g.test(displayText.charAt(displayText.length-1))) return
+    if(/[(^]/g.test(displayText.charAt(displayText.length-1))) return
     else if(/[.]/g.test(displayText.charAt(displayText.length-1)) && (/[^0-9|]/g.test(displayText.charAt(displayText.length-2)) || displayText.length<=2)) return
     if(parentCounter>=1){
         parentCounter--
@@ -224,8 +225,8 @@ powers.onmouseup=function(){
 }
 
 equal.onmouseup=function(){
-    // currentText=ayo
-    // displayText=ayo
+    currentText=ayo
+    displayText=ayo
     if(/[0-9]/.test(displayText)){
         if(/[0-9|.|)|%]/.test(displayText.slice(-1))){
             if(/[.]/g.test(displayText.charAt(displayText.length-1)) && (/[^0-9|]/g.test(displayText.charAt(displayText.length-2)))) return
@@ -237,8 +238,9 @@ equal.onmouseup=function(){
             problemHolder.classList.add('problem'+problemCounter)
             problemHolder.classList.add("holder")
             previousProblems.appendChild(problemHolder)
-            problemHolder.innerHTML=displayText
-            integrateHolders()
+            problemHolder.textContent=displayText + '\n'
+            removeTopHolder()
+            addTopBoxShadow()
             solveParent()
             currentText=displayText.split(' ')
             console.log(currentText)
@@ -248,12 +250,19 @@ equal.onmouseup=function(){
             solveMultiplicationAndDivision()
             emptyIndexesFiltered=currentText.filter(value => (!(value=='')))
             solveAdditionAndSubtraction()
+            console.log(answer + 'meeee')
             checkForRoundingErrors(answer)
             displayText.charAt(displayText.length-1) == '.' ? displayText = displayText.replace('.','') : displayText
             if(imaginaryNumbers) currentProblem.innerHTML='Answer Included Imaginary Numbers'
             else if(!(/[ |%|^]/.test(displayText))) currentProblem.innerHTML='= '+displayText
             else currentProblem.innerHTML='= '+answer
             if(/[-\-]/.test(currentProblem.innerHTML)) currentProblem.innerHTML=currentProblem.innerHTML.replaceAll('--','')
+            console.log(currentText)
+            console.log(displayText)
+            console.log(answer)
+            problemHolder.style='white-space:pre-line; text-align: right'
+            !/[0-9]/g.test(answer) || /0{3}/g.test(answer) ? answer=displayText:answer
+            problemHolder.textContent+= `= ${answer}`
             clear()
         }
     }
@@ -261,33 +270,69 @@ equal.onmouseup=function(){
 
  function checkForRoundingErrors(finalAnswer){
     finalAnswer=finalAnswer.toString().split('')      //finalAnswer was originally a number
+    console.log(finalAnswer)
+    let sigFigs='none'
+    finalAnswer.indexOf('e') > -1 ? sigFigs=finalAnswer.slice(finalAnswer.indexOf('e')):sigFigs='none'
     let decimalIndexOfFinalAnswer = finalAnswer.indexOf('.')
     let shortenedAnswer=finalAnswer.slice(decimalIndexOfFinalAnswer+1)
     let firstNonZeroInteger=shortenedAnswer.join().search(/[1-9]/)
+    console.log(decimalIndexOfFinalAnswer)
     for(i=firstNonZeroInteger;i<shortenedAnswer.length-1;i++){
         if (shortenedAnswer[i-2] == 0 && shortenedAnswer[i-1] == 0 && shortenedAnswer[i] == 0) {  
             shortenedAnswer.splice(i-2)
             finalAnswer.splice(decimalIndexOfFinalAnswer+1)
             finalAnswer = finalAnswer.concat(shortenedAnswer).join('')
             console.log(finalAnswer)
+            sigFigs !='none' ? finalAnswer+= sigFigs.join(''): finalAnswer
             displayText = finalAnswer                 //displayText had a different format
-            return                                  //place to add built in precision function
+            console.log(finalAnswer)
+            console.log(displayText)
+        }
+    }
+    for(i=0;i<shortenedAnswer.length-1;i++){
+        console.log('yooooo')
+        if(shortenedAnswer[i-2] == shortenedAnswer[i] && shortenedAnswer[i-1] == shortenedAnswer[i]){
+            console.log('yooooo')
+            let rounded = Math.round((shortenedAnswer.slice(i-2,i).join('')/10))
+            if(rounded==10){
+                shortenedAnswer.splice(i-2)
+                shortenedAnswer[shortenedAnswer.length-1]= Number(shortenedAnswer[shortenedAnswer.length-1]) + 1
+                console.log(shortenedAnswer)
+            }
+            else{
+                shortenedAnswer.splice(i-2)
+                shortenedAnswer.push(rounded)
+            }
+            console.log(shortenedAnswer.slice(i-2,i).join(''))
+            console.log(rounded)
+            console.log(finalAnswer)
+            console.log( Array.isArray(finalAnswer))
+            // if(Array.isArray(finalAnswer) == false) {           // .10001 x .0010 was coming as string because it got sent through the triple 0 check
+            //     finalAnswer=finalAnswer.split('')
+            // }
+            finalAnswer.splice(decimalIndexOfFinalAnswer+1)
+            finalAnswer = finalAnswer.concat(shortenedAnswer).join('')
+            console.log(finalAnswer)
+            sigFigs !='none' ? finalAnswer+= sigFigs.join(''): finalAnswer
+            displayText = finalAnswer                 //displayText had a different format
+            console.log(displayText)
+            console.log(answer)
+            return 
         }
     }
 }
 
 
 
-transferProblemNumbers=function(){
     
-}
 
 clearButton.onmouseup=function(){
     clear()
     currentProblem.innerHTML=''
     problemCounter=0
     previousProblems.innerHTML=''
-    screen.style='box-shadow:10px 20px 20px rgb(0, 0, 0);'
+    isTopShadeAdded=false
+    addTopBoxShadow()
 }
 
 let tempBlog=''
@@ -519,42 +564,37 @@ sliderBox.onmouseup=function(){
     equal.classList.toggle('equalANDclearAllWhiteMode')
     clearButton.classList.toggle('equalANDclearAllWHiteMode')
     equal.classList.toggle('equalANDclearAllWHiteMode')
+
+    addTopBoxShadow()
 }
 
 
-integrateHolders=function(){
-    const holders=document.querySelectorAll('.holder')
-    for(const holder of holders){
-        holder.onclick=function(){
-            currentProblem.innerHTML+=holder.innerHTML
-            displayText=currentProblem.innerHTML
-            console.log('yeee')
-        }
-        // bottomHalf.onmouseup=function(){
-        //     console.log(holder.offsetTop)
-        //     if(screen.offsetTop<holder.offsetTop){
-        //         console.log(screen.offsetTop+'screen  '+holder.offsetTop+'holder')
-        //         console.log(holder.textContent)
-        //     }
-        //     if(screen.offsetTop>holder.offsetTop){
-        //         console.log(screen.offsetTop+'screen  '+holder.offsetTop+'holder')
-        //         holder.remove()
-        //         console.log('REMOVED')
-        //     }
-        // }
-    }
-}
-
-window.onload=integrateHolders()
-
-bottomHalf.onmouseup=function(){
+function removeTopHolder() {
     const holders=document.querySelectorAll('.holder')
     for(const holder of holders){
         console.log(screen.offsetTop+'screen  '+holder.offsetTop+'holder')
         console.log(holder.textContent)
+        console.log(document.body.classList.value + 'jsdj')
+        console.log(screen.style.boxShadow)
         if(holder.offsetTop<screen.offsetTop){
-            screen.style='box-shadow:inset 0px 20px 20px -20px white, 10px 20px 20px rgb(0, 0, 0);'
+            isTopShadeAdded=true
             holder.remove()
         }
+    }
+}
+
+function addTopBoxShadow(){
+    if (document.body.classList.value.includes('WhiteMode') && isTopShadeAdded==true) {
+        screen.style='box-shadow:inset 0px 20px 20px -20px grey, 10px 20px 20px rgb(180, 180, 180)'
+    }
+    else if (document.body.classList.value=='body' && isTopShadeAdded==true) {
+        screen.style='box-shadow:inset 0px 20px 20px -20px white, 10px 20px 20px rgb(0, 0, 0);'
+        console.log(document.body.classList.value)
+    }
+    else if (document.body.classList.value.includes('WhiteMode')) {
+        screen.style='box-shadow:10px 20px 20px rgb(180, 180, 180)'
+    }
+    else if (document.body.classList.value=='body') {
+        screen.style='box-shadow:10px 20px 20px rgb(0, 0, 0);'
     }
 }
