@@ -18,7 +18,7 @@ const powers=document.querySelector('.powers')
 
 let holders=document.querySelectorAll('.holder')
 
-let ayo=prompt('enter number','')              //for testing values via copy and paste along with the commented variable in the equal function
+// let ayo=prompt('enter number','')              //for testing values via copy and paste along with the commented variable in the equal function
 
 let currentText=[]
 
@@ -225,8 +225,8 @@ powers.onmouseup=function(){
 }
 
 equal.onmouseup=function(){
-    currentText=ayo
-    displayText=ayo
+    // currentText=ayo
+    // displayText=ayo
     if(/[0-9]/.test(displayText)){
         if(/[0-9|.|)|%]/.test(displayText.slice(-1))){
             if(/[.]/g.test(displayText.charAt(displayText.length-1)) && (/[^0-9|]/g.test(displayText.charAt(displayText.length-2)))) return
