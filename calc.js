@@ -251,73 +251,103 @@ equal.onmouseup=function(){
             emptyIndexesFiltered=currentText.filter(value => (!(value=='')))
             solveAdditionAndSubtraction()
             console.log(answer + 'meeee')
+            if(answer == '' ){
+                answer=displayText
+            }
             checkForRoundingErrors(answer)
             displayText.charAt(displayText.length-1) == '.' ? displayText = displayText.replace('.','') : displayText
             if(imaginaryNumbers) currentProblem.innerHTML='Answer Included Imaginary Numbers'
             else if(!(/[ |%|^]/.test(displayText))) currentProblem.innerHTML='= '+displayText
             else currentProblem.innerHTML='= '+answer
-            if(/[-\-]/.test(currentProblem.innerHTML)) currentProblem.innerHTML=currentProblem.innerHTML.replaceAll('--','')
+            if(/[-\-]/.test(currentProblem.innerHTML)){
+                currentProblem.innerHTML=currentProblem.innerHTML.replaceAll('--','')
+            }
             console.log(currentText)
             console.log(displayText)
             console.log(answer)
             problemHolder.style='white-space:pre-line; text-align: right'
-            !/[0-9]/g.test(answer) || /0{3}/g.test(answer) ? answer=displayText:answer
-            problemHolder.textContent+= `= ${answer}`
+            problemHolder.textContent+= `= ${displayText}`
             clear()
         }
     }
 }
 
  function checkForRoundingErrors(finalAnswer){
-    finalAnswer=finalAnswer.toString().split('')      //finalAnswer was originally a number
+    console.log(typeof(finalAnswer))
+    typeof(finalAnswer) == 'number' ? finalAnswer=finalAnswer.toString().split('') : 
+    typeof(finalAnswer) == 'string' ? finalAnswer=finalAnswer.split('') :
     console.log(finalAnswer)
-    let sigFigs='none'
-    finalAnswer.indexOf('e') > -1 ? sigFigs=finalAnswer.slice(finalAnswer.indexOf('e')):sigFigs='none'
+    let expNotation='none'
+    finalAnswer.indexOf('e') > -1 ? expNotation=finalAnswer.slice(finalAnswer.indexOf('e')):expNotation='none'
     let decimalIndexOfFinalAnswer = finalAnswer.indexOf('.')
     let shortenedAnswer=finalAnswer.slice(decimalIndexOfFinalAnswer+1)
     let firstNonZeroInteger=shortenedAnswer.join().search(/[1-9]/)
     console.log(decimalIndexOfFinalAnswer)
-    for(i=firstNonZeroInteger;i<shortenedAnswer.length-1;i++){
-        if (shortenedAnswer[i-2] == 0 && shortenedAnswer[i-1] == 0 && shortenedAnswer[i] == 0) {  
-            shortenedAnswer.splice(i-2)
+    console.log(shortenedAnswer)
+    //js incorrectly maths some decimals and I've found that it repeats at least 8 zeros
+    //temporary fix
+    let startOfReapeatingZeros = shortenedAnswer.join('').search(/0{8}/)
+    if(startOfReapeatingZeros > -1){
+        console.log(shortenedAnswer)
+        shortenedAnswer.splice(startOfReapeatingZeros)
+        console.log('beeboo')
+        console.log(shortenedAnswer)
+        // the digit after the decimal would get cut off in some cases
+        shortenedAnswer[startOfReapeatingZeros-1] == '.' ?   
+        finalAnswer.splice(decimalIndexOfFinalAnswer+2) : finalAnswer.splice(decimalIndexOfFinalAnswer+2)
+        finalAnswer = finalAnswer.concat(shortenedAnswer).join('')
+        console.log(finalAnswer)
+        console.log(finalAnswer)
+        expNotation !='none' ? 
+        finalAnswer+= expNotation.join(''): finalAnswer
+        displayText = finalAnswer                 //displayText had a different format
+        console.log(displayText)
+        console.log(answer)
+    }
+    for(i=0;i<shortenedAnswer.length-1;i++){ 
+        if(expNotation == 'none'){
+            let extraNums = shortenedAnswer.slice(11)
+            console.log(extraNums)
+            console.log(shortenedAnswer)
+            let rounded = Math.round((shortenedAnswer.slice(11,13).join('')/10))
+            shortenedAnswer.splice(11)
+            console.log(shortenedAnswer)
+            shortenedAnswer.push(rounded.toString())
+            console.log(shortenedAnswer)
+            let endZeros = shortenedAnswer.join('').search(/0*$/)
+            endZeros > -1 ? shortenedAnswer.splice(endZeros) : shortenedAnswer
+            if(!(finalAnswer instanceof Array)){
+                finalAnswer = finalAnswer.split('')
+            }
             finalAnswer.splice(decimalIndexOfFinalAnswer+1)
             finalAnswer = finalAnswer.concat(shortenedAnswer).join('')
+            console.log(extraNums.join('').search(/[1-9]/))
+            extraNums.join('').search(/[1-9]/) > -1 ? finalAnswer+='~': finalAnswer
             console.log(finalAnswer)
-            sigFigs !='none' ? finalAnswer+= sigFigs.join(''): finalAnswer
             displayText = finalAnswer                 //displayText had a different format
-            console.log(finalAnswer)
             console.log(displayText)
+            console.log(answer)
+            return
         }
-    }
-    for(i=0;i<shortenedAnswer.length-1;i++){
-        console.log('yooooo')
-        if(shortenedAnswer[i-2] == shortenedAnswer[i] && shortenedAnswer[i-1] == shortenedAnswer[i]){
+        else if (shortenedAnswer[i-2] == shortenedAnswer[i] && shortenedAnswer[i-1] == shortenedAnswer[i] && shortenedAnswer[i]){
             console.log('yooooo')
             let rounded = Math.round((shortenedAnswer.slice(i-2,i).join('')/10))
             if(rounded==10){
                 shortenedAnswer.splice(i-2)
                 shortenedAnswer[shortenedAnswer.length-1]= Number(shortenedAnswer[shortenedAnswer.length-1]) + 1
-                console.log(shortenedAnswer)
             }
             else{
                 shortenedAnswer.splice(i-2)
                 shortenedAnswer.push(rounded)
             }
-            console.log(shortenedAnswer.slice(i-2,i).join(''))
-            console.log(rounded)
-            console.log(finalAnswer)
-            console.log( Array.isArray(finalAnswer))
-            // if(Array.isArray(finalAnswer) == false) {           // .10001 x .0010 was coming as string because it got sent through the triple 0 check
-            //     finalAnswer=finalAnswer.split('')
-            // }
             finalAnswer.splice(decimalIndexOfFinalAnswer+1)
             finalAnswer = finalAnswer.concat(shortenedAnswer).join('')
             console.log(finalAnswer)
-            sigFigs !='none' ? finalAnswer+= sigFigs.join(''): finalAnswer
+            console.log(finalAnswer)
+            expNotation !='none' ? finalAnswer+= expNotation.join(''): finalAnswer
             displayText = finalAnswer                 //displayText had a different format
             console.log(displayText)
             console.log(answer)
-            return 
         }
     }
 }
