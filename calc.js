@@ -39,6 +39,7 @@ let isTopShadeAdded = false
 // problems to fix ___
 // spread comments out about WHY the stuff is there
 // scrollable previous problems possibly?
+// (-%)
 
 
 
@@ -194,7 +195,7 @@ percentage.onmouseup=function(){
 
 rightParentheses.onmouseup=function(){
     if(/[(^]/g.test(displayText.charAt(displayText.length-1))) return
-    else if(/[.]/g.test(displayText.charAt(displayText.length-1)) && (/[^0-9|]/g.test(displayText.charAt(displayText.length-2)) || displayText.length<=2)) return
+    else if(/[.-]/g.test(displayText.charAt(displayText.length-1)) && (/[^0-9|]/g.test(displayText.charAt(displayText.length-2)) || displayText.length<=2)) return
     if(parentCounter>=1){
         parentCounter--
         displayText+=rightParentheses.innerHTML
@@ -251,10 +252,12 @@ equal.onmouseup=function(){
             emptyIndexesFiltered=currentText.filter(value => (!(value=='')))
             solveAdditionAndSubtraction()
             console.log(answer + 'meeee')
-            if(answer == '' ){
+            if(answer === ''){
                 answer=displayText
             }
+            console.log(answer)
             checkForRoundingErrors(answer)
+            console.log(answer,displayText)
             displayText.charAt(displayText.length-1) == '.' ? displayText = displayText.replace('.','') : displayText
             if(imaginaryNumbers) currentProblem.innerHTML='Answer Included Imaginary Numbers'
             else if(!(/[ |%|^]/.test(displayText))) currentProblem.innerHTML='= '+displayText
@@ -266,7 +269,8 @@ equal.onmouseup=function(){
             console.log(displayText)
             console.log(answer)
             problemHolder.style='white-space:pre-line; text-align: right'
-            problemHolder.textContent+= `= ${displayText}`
+            !/[0-9]/g.test(answer)? answer=displayText:answer
+            problemHolder.textContent+= `= ${answer}`
             clear()
         }
     }
@@ -301,6 +305,8 @@ equal.onmouseup=function(){
         expNotation !='none' ? 
         finalAnswer+= expNotation.join(''): finalAnswer
         displayText = finalAnswer                 //displayText had a different format
+        answer = finalAnswer
+        
         console.log(displayText)
         console.log(answer)
     }
@@ -325,6 +331,7 @@ equal.onmouseup=function(){
             extraNums.join('').search(/[1-9]/) > -1 ? finalAnswer+='~': finalAnswer
             console.log(finalAnswer)
             displayText = finalAnswer                 //displayText had a different format
+            answer = finalAnswer
             console.log(displayText)
             console.log(answer)
             return
