@@ -39,69 +39,29 @@ let isTopShadeAdded = false
 // problems to fix ___
 // spread comments out about WHY the stuff is there
 // scrollable previous problems possibly?
-// (-%)
+// .0000000001 then equaling
+// .03^5 with rounding repeating 9s
 
 
 
 for(const digit of digits){
     digit.onmouseup=function(){
-        console.log(screen.offsetTop+'yo')
-        if(digit.innerHTML=='.' || digit.innerHTML=='Del') return   //different eventlisteners for those 2 below
-        if(/[)|%]/g.test(displayText.charAt(displayText.length-1))) displayText+=' x '  
-        console.log(Math.sqrt((2)))
-        displayText+=digit.innerHTML
-        currentProblem.innerHTML=displayText
+        inputDigit(digit.innerHTML)
     }
 }
 
 for(const operator of basicOperators){
     operator.onmouseup=function(){
-        if(/[.]/g.test(displayText.charAt(displayText.length-1)) && (/[^0-9|]/g.test(displayText.charAt(displayText.length-2)) || displayText=='.')) return // halts user from applying an operator to just a '.'
-        else if(/[0-9|%|.|)]/g.test(displayText.charAt(displayText.length-1))){
-            displayText+=' '+operator.innerHTML+' '
-            currentProblem.innerHTML=displayText
-        }
-        else if(/[x|/|+\-]/g.test(displayText.charAt(displayText.length-2))){
-            displayText=displayText.slice(0,-2)
-            displayText+=operator.innerHTML+' '
-            currentProblem.innerHTML=displayText
-            console.log('uhu')
-        }
+        inputBasicOperator(operator.innerHTML)
     }
 }
 
 decimal.onmouseup=function(){
-    let lastDecimalIndex=displayText.lastIndexOf('.')
-    let lastPower=displayText.lastIndexOf('^')
-    if(displayText.lastIndexOf(' ')>lastDecimalIndex || displayText.lastIndexOf('(')>lastDecimalIndex || !/[ |.]/.test(displayText)  || lastDecimalIndex<lastPower){
-        if(/[)|%]/.test(displayText.slice(-1))){
-            displayText+=' x ' + decimal.innerHTML
-            currentProblem.innerHTML=displayText
-        }
-        else{
-        displayText+=decimal.innerHTML
-        currentProblem.innerHTML=displayText
-        }
-    }
+    inputDecimal(decimal.innerHTML)
 }
 
 deleteButton.onmouseup=function(){
-    if(displayText.slice(-1)==')'){
-        parentCounter++
-        console.log(parentCounter)
-    }
-    if(displayText.slice(-1)=='(') {
-        parentCounter--
-        console.log(parentCounter)
-    }
-    if(displayText.slice(-1)==' '){
-        displayText=displayText.slice(0,-3)
-        currentProblem.innerHTML=displayText
-    }
-    else {
-    displayText=displayText.slice(0,-1)
-    currentProblem.innerHTML=displayText
-    }
+    inputBackspace()
 }
 
 
@@ -109,186 +69,44 @@ let emptyIndexesFiltered=''
 
 
 chooseInteger.onmouseup=function(){
-    console.log(displayText)
-    if(displayText.slice(-1)=='-'){
-        displayText=displayText.slice(0,-1)
-        currentProblem.innerHTML=displayText
-    }
-    else if(/[ |^]/.test(displayText.slice(-1)) || displayText==''){
-        displayText+='-'
-        currentProblem.innerHTML=displayText
-    }
-    else if(displayText.slice(-1)==')'){
-        let integerParenthesesCounter=1
-        for(i=displayText.length-2;integerParenthesesCounter>0;i--){
-            if (displayText[i]==')') integerParenthesesCounter++
-            else if (displayText[i]=='('){
-                integerParenthesesCounter--
-                if(integerParenthesesCounter==0){
-                    console.log(displayText[i])
-                    if(!(displayText[i-1]=='-')){
-                        displayText=displayText.slice(0,i) + '-'+ displayText.slice(i)
-                        currentProblem.innerHTML=displayText
-                    }
-                    else if(displayText[i-1]=='-'){
-                        displayText=displayText.slice(0,i-1) + displayText.slice(i)
-                        currentProblem.innerHTML=displayText
-                    }
-                }
-            }
-        }
-    }
-    else if(/[0-9|.|%|(]/.test(displayText.slice(-1))){
-        let index=displayText.lastIndexOf(' ')
-        let leftParentIndex=displayText.lastIndexOf('(')
-        console.log(index + '' + leftParentIndex)
-        if(index>leftParentIndex){
-            if(/[0-9|%|.]/.test(displayText.slice(index+1,index+2))){
-                displayText=displayText.slice(0,index+1) + '-' + displayText.slice(index+1)
-                currentProblem.innerHTML=displayText
-            }
-            else if(displayText.slice(index+1,index+2)=='-') {
-                displayText=displayText.slice(0,index+1) + displayText.slice(index+2)
-                currentProblem.innerHTML=displayText
-            }
-        }
-        else {
-            console.log('sj')
-            if(displayText.slice(-1)=='('){
-                displayText+='-'
-                currentProblem.innerHTML=displayText
-            }
-            else if(/[0-9|.|%]/.test(displayText.charAt(leftParentIndex+1))){
-                displayText=displayText.slice(0,leftParentIndex+1) + '-' + displayText.slice(leftParentIndex+1)
-                currentProblem.innerHTML=displayText
-            }
-            else if(displayText.charAt(leftParentIndex+1)=='-') {
-                displayText=displayText.slice(0,leftParentIndex+1) + displayText.slice(leftParentIndex+2)
-                currentProblem.innerHTML=displayText
-            }
-        }
-    }
+    inputNegative()
 }
 
-percentage.onmouseup=function(){
-    if(displayText=='' || displayText.slice(-1)=='('){
-        console.log('sjsj')
-        displayText+='%'
-        console.log(displayText)
-        currentProblem.innerHTML=displayText
-        console.log(currentProblem.innerHTML)
-    }
-    else if(/[.]/g.test(displayText.charAt(displayText.length-1)) && (/[^0-9|]/g.test(displayText.charAt(displayText.length-2)) || displayText.length<=2)) return
-    else if(/[0-9|.| |\-]/g.test(displayText.charAt(displayText.length-1))){
-        displayText+='%'
-        currentProblem.innerHTML=displayText
-    }
-    else if(/[)]/g.test(displayText.charAt(displayText.length-1))){
-        displayText+=' x %'
-        currentProblem.innerHTML=displayText
-    }
-    else if(/[%]/g.test(displayText.charAt(displayText.length-1))){
-        displayText=displayText.slice(0,-1)
-        currentProblem.innerHTML=displayText
-    }
-}
+percentage.addEventListener('mouseup', inputPercentage)
+
 
 rightParentheses.onmouseup=function(){
-    if(/[(^]/g.test(displayText.charAt(displayText.length-1))) return
-    else if(/[.-]/g.test(displayText.charAt(displayText.length-1)) && (/[^0-9|]/g.test(displayText.charAt(displayText.length-2)) || displayText.length<=2)) return
-    if(parentCounter>=1){
-        parentCounter--
-        displayText+=rightParentheses.innerHTML
-        currentProblem.innerHTML=displayText
-    }
+    inputRightParenthesis()
 }
 
 leftParentheses.onmouseup=function(){
-    if(/[(]/g.test(displayText.charAt(displayText.length-1))) return
-    else if(/[.]/g.test(displayText.charAt(displayText.length-1)) && (/[^0-9|]/g.test(displayText.charAt(displayText.length-2)) || displayText=='.')) return
-    if(/[0-9|(|)|%|.]/g.test(displayText.charAt(displayText.length-1))){
-        displayText+=' x '+leftParentheses.innerHTML
-        currentProblem.innerHTML=displayText
-        parentCounter++
-    }
-    else{
-        displayText+=leftParentheses.innerHTML
-        currentProblem.innerHTML=displayText
-        parentCounter++
-    }
+    inputLeftParenthesis()
 }
 
 
 powers.onmouseup=function(){
-    if(/[-|^| |(]/.test(displayText.slice(-1)) || displayText.length==0) return
-    displayText+=powers.innerHTML
-    currentProblem.innerHTML=displayText
+    inputPowers()
 }
 
+clearButton.addEventListener('mouseup', clear)
+
 equal.onmouseup=function(){
-    // currentText=ayo
-    // displayText=ayo
-    if(/[0-9]/.test(displayText)){
-        if(/[0-9|.|)|%]/.test(displayText.slice(-1))){
-            if(/[.]/g.test(displayText.charAt(displayText.length-1)) && (/[^0-9|]/g.test(displayText.charAt(displayText.length-2)))) return
-            for(;parentCounter>=1;parentCounter--){
-                displayText+=')'             //Adds any missing parentheses user didn't input
-            }
-            problemCounter++
-            const problemHolder=document.createElement('p')
-            problemHolder.classList.add('problem'+problemCounter)
-            problemHolder.classList.add("holder")
-            previousProblems.appendChild(problemHolder)
-            problemHolder.textContent=displayText + '\n'
-            removeTopHolder()
-            addTopBoxShadow()
-            solveParent()
-            currentText=displayText.split(' ')
-            console.log(currentText)
-            console.log(displayText)
-            solveExponents()
-            solvePercents(currentText)
-            solveMultiplicationAndDivision()
-            emptyIndexesFiltered=currentText.filter(value => (!(value=='')))
-            solveAdditionAndSubtraction()
-            console.log(answer + 'meeee')
-            if(answer === ''){
-                answer=displayText
-            }
-            console.log(answer)
-            checkForRoundingErrors(answer)
-            console.log(answer,displayText)
-            displayText.charAt(displayText.length-1) == '.' ? displayText = displayText.replace('.','') : displayText
-            if(imaginaryNumbers) currentProblem.innerHTML='Answer Included Imaginary Numbers'
-            else if(!(/[ |%|^]/.test(displayText))) currentProblem.innerHTML='= '+displayText
-            else currentProblem.innerHTML='= '+answer
-            if(/[-\-]/.test(currentProblem.innerHTML)){
-                currentProblem.innerHTML=currentProblem.innerHTML.replaceAll('--','')
-            }
-            console.log(currentText)
-            console.log(displayText)
-            console.log(answer)
-            problemHolder.style='white-space:pre-line; text-align: right'
-            !/[0-9]/g.test(answer)? answer=displayText:answer
-            problemHolder.textContent+= `= ${answer}`
-            clear()
-        }
-    }
+    equateProblem()
 }
 
  function checkForRoundingErrors(finalAnswer){
     console.log(typeof(finalAnswer))
-    typeof(finalAnswer) == 'number' ? finalAnswer=finalAnswer.toString().split('') : 
-    typeof(finalAnswer) == 'string' ? finalAnswer=finalAnswer.split('') :
+    typeof(finalAnswer) == 'number' ? finalAnswer=finalAnswer.toString().split('') : finalAnswer
+    typeof(finalAnswer) == 'string' ? finalAnswer=finalAnswer.split('') : finalAnswer
+    if(!finalAnswer.join('').includes('.')){return}
     console.log(finalAnswer)
     let expNotation='none'
     finalAnswer.indexOf('e') > -1 ? expNotation=finalAnswer.slice(finalAnswer.indexOf('e')):expNotation='none'
     let decimalIndexOfFinalAnswer = finalAnswer.indexOf('.')
     let shortenedAnswer=finalAnswer.slice(decimalIndexOfFinalAnswer+1)
-    let firstNonZeroInteger=shortenedAnswer.join().search(/[1-9]/)
     console.log(decimalIndexOfFinalAnswer)
     console.log(shortenedAnswer)
-    //js incorrectly maths some decimals and I've found that it repeats at least 8 zeros
+    //js incorrectly maths some decimals and I've found that it in most cases it repeats at least 8 zeros
     //temporary fix
     let startOfReapeatingZeros = shortenedAnswer.join('').search(/0{8}/)
     if(startOfReapeatingZeros > -1){
@@ -304,9 +122,8 @@ equal.onmouseup=function(){
         console.log(finalAnswer)
         expNotation !='none' ? 
         finalAnswer+= expNotation.join(''): finalAnswer
-        displayText = finalAnswer                 //displayText had a different format
+        displayText = finalAnswer                 
         answer = finalAnswer
-        
         console.log(displayText)
         console.log(answer)
     }
@@ -322,6 +139,7 @@ equal.onmouseup=function(){
             console.log(shortenedAnswer)
             let endZeros = shortenedAnswer.join('').search(/0*$/)
             endZeros > -1 ? shortenedAnswer.splice(endZeros) : shortenedAnswer
+            //would turn into a string SOMETIMES, still don't know why
             if(!(finalAnswer instanceof Array)){
                 finalAnswer = finalAnswer.split('')
             }
@@ -330,47 +148,37 @@ equal.onmouseup=function(){
             console.log(extraNums.join('').search(/[1-9]/))
             extraNums.join('').search(/[1-9]/) > -1 ? finalAnswer+='~': finalAnswer
             console.log(finalAnswer)
-            displayText = finalAnswer                 //displayText had a different format
+            displayText = finalAnswer                 
             answer = finalAnswer
             console.log(displayText)
             console.log(answer)
             return
         }
-        else if (shortenedAnswer[i-2] == shortenedAnswer[i] && shortenedAnswer[i-1] == shortenedAnswer[i] && shortenedAnswer[i]){
-            console.log('yooooo')
-            let rounded = Math.round((shortenedAnswer.slice(i-2,i).join('')/10))
-            if(rounded==10){
-                shortenedAnswer.splice(i-2)
-                shortenedAnswer[shortenedAnswer.length-1]= Number(shortenedAnswer[shortenedAnswer.length-1]) + 1
-            }
-            else{
-                shortenedAnswer.splice(i-2)
-                shortenedAnswer.push(rounded)
-            }
-            finalAnswer.splice(decimalIndexOfFinalAnswer+1)
-            finalAnswer = finalAnswer.concat(shortenedAnswer).join('')
-            console.log(finalAnswer)
-            console.log(finalAnswer)
-            expNotation !='none' ? finalAnswer+= expNotation.join(''): finalAnswer
-            displayText = finalAnswer                 //displayText had a different format
-            console.log(displayText)
-            console.log(answer)
-        }
+        // //exponential Notation if it has triple repeating
+        // else if (shortenedAnswer[i-2] == shortenedAnswer[i] && shortenedAnswer[i-1] == shortenedAnswer[i] && shortenedAnswer[i]){
+        //     console.log('yooooo')
+        //     let rounded = Math.round((shortenedAnswer.slice(i-2,i).join('')/10))
+        //     if(rounded==10){
+        //         shortenedAnswer.splice(i-2)
+        //         shortenedAnswer[shortenedAnswer.length-1]= Number(shortenedAnswer[shortenedAnswer.length-1]) + 1
+        //     }
+        //     else{
+        //         shortenedAnswer.splice(i-2)
+        //         shortenedAnswer.push(rounded)
+        //     }
+        //     finalAnswer.splice(decimalIndexOfFinalAnswer+1)
+        //     finalAnswer = finalAnswer.concat(shortenedAnswer).join('')
+        //     console.log(finalAnswer)
+        //     console.log(finalAnswer)
+        //     expNotation !='none' ? finalAnswer+= expNotation.join(''): finalAnswer
+        //     displayText = finalAnswer                 
+        //     console.log(displayText)
+        //     console.log(answer)
+        // }
     }
 }
 
 
-
-    
-
-clearButton.onmouseup=function(){
-    clear()
-    currentProblem.innerHTML=''
-    problemCounter=0
-    previousProblems.innerHTML=''
-    isTopShadeAdded=false
-    addTopBoxShadow()
-}
 
 let tempBlog=''
 
@@ -566,7 +374,7 @@ solvePercents=function(arrayOfChoice){
     }
 }
 
-clear =function(){
+function resetVariables(){
     answer=''
     currentText=[]
     displayText=''
@@ -575,7 +383,7 @@ clear =function(){
 }
 
 
-
+//CSS features
 
 
 const slider=document.querySelector('.slider')
@@ -634,4 +442,267 @@ function addTopBoxShadow(){
     else if (document.body.classList.value=='body') {
         screen.style='box-shadow:10px 20px 20px rgb(0, 0, 0);'
     }
+}
+
+//Keyboard support 
+
+window.addEventListener('keydown', (event) =>{
+    console.log(event.key)
+    if(event.key.match(/[0-9]/)) inputDigit(event.key)
+    if(event.key.match(/[-+x/]/)) inputBasicOperator(event.key)
+    if(event.key == '.') inputDecimal(event.key)
+    if(event.key == 'Backspace') inputBackspace()
+    if(event.key == '_') inputNegative()
+    if(event.key == '%') inputPercentage()
+    if(event.key == ')') inputRightParenthesis()
+    if(event.key == '(') inputLeftParenthesis()
+    if(event.key == '^') inputPowers()
+    if(event.key == 'Enter' || event.key == '=') equateProblem()
+    if(event.key == 'C') clear()
+})
+
+
+
+function inputDigit(element){
+    console.log(screen.offsetTop+'yo')
+    if(element=='.' || element=='Del') return   
+    if(/[)|%]/g.test(displayText.charAt(displayText.length-1))) displayText+=' x '  
+    console.log(Math.sqrt((2)))
+    displayText+=element
+    currentProblem.innerHTML=displayText
+}
+
+
+
+function inputBasicOperator(element){
+        if(/[.]/g.test(displayText.charAt(displayText.length-1)) && 
+        (/[^0-9|]/g.test(displayText.charAt(displayText.length-2)) || displayText=='.')) return 
+        else if(/[0-9|%|.|)]/g.test(displayText.charAt(displayText.length-1))){
+            displayText+=' '+element+' '
+            currentProblem.innerHTML=displayText
+        }
+        else if(/[x|/|+\-]/g.test(displayText.charAt(displayText.length-2))){
+            displayText=displayText.slice(0,-2)
+            displayText+=element+' '
+            currentProblem.innerHTML=displayText
+            console.log('uhu')
+        }
+}
+
+
+
+function inputDecimal(element){
+    let lastDecimalIndex=displayText.lastIndexOf('.')
+    let lastPower=displayText.lastIndexOf('^')
+    if(displayText.lastIndexOf(' ')>lastDecimalIndex || displayText.lastIndexOf('(')>lastDecimalIndex || 
+    !/[ |.]/.test(displayText)  || lastDecimalIndex<lastPower){
+        if(/[)|%]/.test(displayText.slice(-1))){
+            displayText+=' x ' + element
+            currentProblem.innerHTML=displayText
+        }
+        else {
+            displayText+=element
+            currentProblem.innerHTML=displayText
+        }
+    }
+}
+
+
+
+function inputBackspace(){
+    if(displayText.slice(-1)==')'){
+        parentCounter++
+        console.log(parentCounter)
+    }
+    if(displayText.slice(-1)=='(') {
+        parentCounter--
+        console.log(parentCounter)
+    }
+    if(displayText.slice(-1)==' '){
+        displayText=displayText.slice(0,-3)
+        currentProblem.innerHTML=displayText
+    }
+    else {
+    displayText=displayText.slice(0,-1)
+    currentProblem.innerHTML=displayText
+    }
+}
+
+
+
+function inputNegative(){
+    console.log(displayText)
+    if(displayText.slice(-1)=='-'){
+        displayText=displayText.slice(0,-1)
+        currentProblem.innerHTML=displayText
+    }
+    else if(/[ |^]/.test(displayText.slice(-1)) || displayText==''){
+        displayText+='-'
+        currentProblem.innerHTML=displayText
+    }
+    else if(displayText.slice(-1)==')'){
+        let integerParenthesesCounter=1
+        for(i=displayText.length-2;integerParenthesesCounter>0;i--){
+            if (displayText[i]==')') integerParenthesesCounter++
+            else if (displayText[i]=='('){
+                integerParenthesesCounter--
+                if(integerParenthesesCounter==0){
+                    console.log(displayText[i])
+                    if(!(displayText[i-1]=='-')){
+                        displayText=displayText.slice(0,i) + '-'+ displayText.slice(i)
+                        currentProblem.innerHTML=displayText
+                    }
+                    else if(displayText[i-1]=='-'){
+                        displayText=displayText.slice(0,i-1) + displayText.slice(i)
+                        currentProblem.innerHTML=displayText
+                    }
+                }
+            }
+        }
+    }
+    else if(/[0-9|.|%|(]/.test(displayText.slice(-1))){
+        let index=displayText.lastIndexOf(' ')
+        let leftParentIndex=displayText.lastIndexOf('(')
+        console.log(index + '' + leftParentIndex)
+        if(index>leftParentIndex){
+            if(/[0-9|%|.]/.test(displayText.slice(index+1,index+2))){
+                displayText=displayText.slice(0,index+1) + '-' + displayText.slice(index+1)
+                currentProblem.innerHTML=displayText
+            }
+            else if(displayText.slice(index+1,index+2)=='-') {
+                displayText=displayText.slice(0,index+1) + displayText.slice(index+2)
+                currentProblem.innerHTML=displayText
+            }
+        }
+        else {
+            console.log('sj')
+            if(displayText.slice(-1)=='('){
+                displayText+='-'
+                currentProblem.innerHTML=displayText
+            }
+            else if(/[0-9|.|%]/.test(displayText.charAt(leftParentIndex+1))){
+                displayText=displayText.slice(0,leftParentIndex+1) + '-' + displayText.slice(leftParentIndex+1)
+                currentProblem.innerHTML=displayText
+            }
+            else if(displayText.charAt(leftParentIndex+1)=='-') {
+                displayText=displayText.slice(0,leftParentIndex+1) + displayText.slice(leftParentIndex+2)
+                currentProblem.innerHTML=displayText
+            }
+        }
+    }
+}
+
+function inputPercentage(){
+    if(displayText=='' || displayText.slice(-1)=='('){
+        console.log('sjsj')
+        displayText+='%'
+        console.log(displayText)
+        currentProblem.innerHTML=displayText
+        console.log(currentProblem.innerHTML)
+    }
+    else if(/[.]/g.test(displayText.charAt(displayText.length-1)) && (/[^0-9|]/g.test(displayText.charAt(displayText.length-2)) || displayText.length<=2)) return
+    else if(/[0-9|.| |\-]/g.test(displayText.charAt(displayText.length-1))){
+        displayText+='%'
+        currentProblem.innerHTML=displayText
+    }
+    else if(/[)]/g.test(displayText.charAt(displayText.length-1))){
+        displayText+=' x %'
+        currentProblem.innerHTML=displayText
+    }
+    else if(/[%]/g.test(displayText.charAt(displayText.length-1))){
+        displayText=displayText.slice(0,-1)
+        currentProblem.innerHTML=displayText
+    }
+}
+
+function inputRightParenthesis(){
+    if(/[(^]/g.test(displayText.charAt(displayText.length-1))) return
+    else if(/[.-]/g.test(displayText.charAt(displayText.length-1)) && (/[^0-9|]/g.test(displayText.charAt(displayText.length-2)) || displayText.length<=2)) return
+    if(parentCounter>=1){
+        parentCounter--
+        displayText+=rightParentheses.innerHTML
+        currentProblem.innerHTML=displayText
+    }
+}
+
+function inputLeftParenthesis(){
+    if(/[(]/g.test(displayText.charAt(displayText.length-1))) return
+    else if(/[.]/g.test(displayText.charAt(displayText.length-1)) && (/[^0-9|]/g.test(displayText.charAt(displayText.length-2)) || displayText=='.')) return
+    if(/[0-9|(|)|%|.]/g.test(displayText.charAt(displayText.length-1))){
+        displayText+=' x '+leftParentheses.innerHTML
+        currentProblem.innerHTML=displayText
+        parentCounter++
+    }
+    else{
+        displayText+=leftParentheses.innerHTML
+        currentProblem.innerHTML=displayText
+        parentCounter++
+    }
+}
+
+function inputPowers(){
+    if(/[-|^| |(]/.test(displayText.slice(-1)) || displayText.length==0) return
+    displayText+=powers.innerHTML
+    currentProblem.innerHTML=displayText
+}
+
+function equateProblem(){
+    // currentText=ayo
+    // displayText=ayo
+    if(/[0-9]/.test(displayText)){
+        if(/[0-9|.|)|%]/.test(displayText.slice(-1))){
+            if(/[.]/g.test(displayText.charAt(displayText.length-1)) && (/[^0-9|]/g.test(displayText.charAt(displayText.length-2)))) return
+            for(;parentCounter>=1;parentCounter--){
+                displayText+=')'             
+            }
+            problemCounter++
+            const problemHolder=document.createElement('p')
+            problemHolder.classList.add('problem'+problemCounter)
+            problemHolder.classList.add("holder")
+            previousProblems.appendChild(problemHolder)
+            problemHolder.textContent=displayText + '\n'
+            removeTopHolder()
+            addTopBoxShadow()
+            solveParent()
+            currentText=displayText.split(' ')
+            console.log(currentText)
+            console.log(displayText)
+            solveExponents()
+            solvePercents(currentText)
+            solveMultiplicationAndDivision()
+            emptyIndexesFiltered=currentText.filter(value => (!(value=='')))
+            solveAdditionAndSubtraction()
+            console.log(answer + 'meeee')
+            if(answer === ''){
+                answer=displayText
+            }
+            console.log(answer)
+            checkForRoundingErrors(answer)
+            console.log(answer,displayText)
+            displayText.charAt(displayText.length-1) == '.' ? displayText = displayText.replace('.','') : displayText
+            if(imaginaryNumbers) currentProblem.innerHTML='Answer Included Imaginary Numbers'
+            else if(!(/[ |%|^]/.test(displayText))) currentProblem.innerHTML='= '+displayText
+            else currentProblem.innerHTML='= '+answer
+            if(/[-\-]/.test(currentProblem.innerHTML)){
+                currentProblem.innerHTML=currentProblem.innerHTML.replaceAll('--','')
+            }
+            console.log(currentText)
+            console.log(displayText)
+            console.log(answer)
+            problemHolder.style='white-space:pre-line; text-align: right'
+            !/[0-9]/g.test(answer)? answer=displayText:answer
+            problemHolder.textContent+= `= ${answer}`
+            resetVariables()
+        }
+    }
+}
+
+
+function clear(){
+    resetVariables()
+    currentProblem.innerHTML=''
+    problemCounter=0
+    previousProblems.innerHTML=''
+    isTopShadeAdded=false
+    addTopBoxShadow()
 }
