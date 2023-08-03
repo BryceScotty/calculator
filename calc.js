@@ -19,7 +19,7 @@ const powers=document.querySelector('.powers')
 let holders=document.querySelectorAll('.holder')
 
 //for testing values via copy and paste along with the commented variable in the equal function
-let ayo=prompt('enter number','')
+// let ayo=prompt('enter number','')
 
 let currentText=[]
 
@@ -622,8 +622,8 @@ function inputPowers(){
 
 function equateProblem(){
     // for testing via copy and paste
-    currentText=ayo
-    displayText=ayo
+    // currentText=ayo
+    // displayText=ayo
     if(/[0-9]/.test(displayText)){
         if(/[0-9|.|)|%]/.test(displayText.slice(-1))){
             if(/[.]/g.test(displayText.charAt(displayText.length-1)) && 
