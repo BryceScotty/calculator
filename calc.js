@@ -114,7 +114,7 @@ function checkForRoundingErrors(finalAnswer){
         let rounded = Math.round((shortenedAnswer.slice(11,13).join('')/10))
         shortenedAnswer.splice(11)
         console.log(shortenedAnswer)
-        shortenedAnswer.push(rounded.toString())
+        rounded == 10 ? shortenedAnswer.push(1,0) : shortenedAnswer.push(rounded.toString())
         console.log(shortenedAnswer)
         let endZeros = shortenedAnswer.join('').search(/0*$/)
         let repeatingNines = shortenedAnswer.join('').search(/9{8}/)
@@ -144,6 +144,7 @@ function checkForRoundingErrors(finalAnswer){
         console.log(extraNums.join('').search(/[1-9]/))
         finalAnswer.slice(-1) == '.' ? finalAnswer = finalAnswer.replace('.',''): finalAnswer
         extraNums.join('').search(/[1-9]/) > -1 ? finalAnswer+='~': finalAnswer
+        console.log(extraNums)
         console.log(finalAnswer)
         displayText = finalAnswer                 
         answer = finalAnswer
@@ -695,7 +696,7 @@ function equateProblem(){
             console.log(answer)
             checkForRoundingErrors(answer)
             console.log(answer,displayText)
-            if(answer === '.') answer = '0', displayText = '0'
+            if(answer === '.' || answer === '') answer = '0', displayText = '0'
             displayText.charAt(displayText.length-1) == '.' ? displayText = displayText.replace('.','') : displayText
             if(imaginaryNumbers) currentProblem.innerHTML='Answer Included Imaginary Numbers'
             else if(!(/[ |%|^]/.test(displayText))) currentProblem.innerHTML='= '+displayText
